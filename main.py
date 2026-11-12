@@ -235,7 +235,7 @@ with c1:
                 </div>
             ''', unsafe_allow_html=True)
             
-            spotify_uri = st.text_input("Spotify Playlist / Track URI or URL", value="https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M")
+            spotify_uri = st.text_input("Spotify Playlist / Track URI or URL", value="https://open.spotify.com/album/0ErRTuEFNp7E7Yp8iWLSkw") # sanctuary os
             try:
                 if "open.spotify.com" in spotify_uri:
                     parts = spotify_uri.split("?")[0].split("/")
