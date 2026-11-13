@@ -36,7 +36,7 @@ button:hover{background:#d4ff1a;color:#0c0c10}button:focus-visible{outline:3px s
 .note{font-size:9px;color:#8b88a8;letter-spacing:.08em;line-height:1.5;margin-top:6px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style></head><body><div class="dev" id="dev"><div class="hz"></div>
-<div class="top"><span>CASSETTE DECK // SANCTUARY-01</span><span class="rec">&#9679; REC</span></div>
+<div class="top"><span>CASSETTE DECK // STREAM</span><span class="rec">&#9679; REC</span></div>
 <div class="row"><div class="cov"><img id="cover" alt="Album cover" src=""></div><div class="meta">
 <div><div class="k">TITLE</div><div class="nm" id="nm"><span id="tt">INSERT TAPE</span></div></div>
 <div><div class="k">ARTIST</div><div class="v" id="ar">-</div></div><div><div class="k">ALBUM</div><div class="v" id="al">-</div></div></div></div>

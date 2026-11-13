@@ -66,6 +66,7 @@ function load(i, play) {
     if (play) {
         au.play().catch(() => {
             $("note").textContent = "CANNOT PLAY FILE // CHECK THE MUSIC FOLDER";
+            $("note").style.color = "#ff4b4b";
         });
     }
 }
@@ -110,6 +111,7 @@ if (!N) {
     au.addEventListener("ended", () => load(idx + 1, true));
     au.addEventListener("error", () => {
         $("note").textContent = "CANNOT LOAD FILE // IS THE LOCAL SERVER RUNNING?";
+        $("note").style.color = "#ff4b4b";
     });
 }
 </script></body></html>"""

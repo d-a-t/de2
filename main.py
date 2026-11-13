@@ -1,7 +1,3 @@
-"""CHECKPOINT 8 / FINAL - Sanctuary Feed, Zenless-Zone-Zero-inspired cassette futurism.
-Cassette player plays a local music cache (./music) or switches to a direct Spotify embed player.
-Run: streamlit run v8_final_spotify_tab.py   (needs streamlit>=1.40)"""
-
 import time
 import html
 import streamlit as st
@@ -12,7 +8,7 @@ from spotify import has_keys
 from local_player import player_html
 
 st.set_page_config(
-    page_title="Sanctuary Feed // ZZZ OS", 
+    page_title="Formicapunk OS", 
     page_icon="✦", 
     layout="wide"
 )
@@ -213,8 +209,8 @@ def card(p, i, n):
             f'<div class="l"><span>✦ r/{e(p["subreddit"])}</span><span>TRK {i+1:03d}</span></div><h3>{e(p["title"])}</h3><p>{e(p["selftext"])}</p>'
             f'<small>u/{e(p["author"])} · ▲ {sc} · 💬 {cm}</small></div></div>')
 
-st.markdown(f"""<div class="top"><span class="badge">SANCTUARY®</span><span class="title">Feed <span class="os">✦ OS</span></span></div>
-<div class="mini"><span>[ SLOW MODE ]</span><span class="pill">2026</span><span class="hex">10</span><span>TAPE: LOCAL CACHE // {len(tracks):02d} TRK</span><span class="live">● {('LIVE // ' + SRC) if live else 'OFFLINE // SAMPLE POSTS'}</span></div>""", unsafe_allow_html=True)
+st.markdown(f"""<div class="top"><span class="badge">FORMICAPUNK®</span><span class="title">Feed <span class="os">✦ OS</span></span></div>
+<div class="mini"><span>[ SLOW MODE ]</span><span class="pill">2026</span><span class="hex">NOVEMBER</span><span>TAPE: LOCAL CACHE // {len(tracks):02d} TRK</span><span class="live">● {('LIVE // ' + SRC) if live else 'OFFLINE // USING SAMPLE POSTS'}</span></div>""", unsafe_allow_html=True)
 
 c1, c2, c3 = st.columns([1.2, 1.0, 3.4], gap="medium")
 
@@ -231,7 +227,7 @@ with c1:
             <div style="background:#17171e; border:2px solid #00f5ff; padding:12px; clip-path:polygon(0 0,calc(100% - 26px) 0,100% 26px,100% 100%,26px 100%,0 calc(100% - 26px)); position:relative;">
                 <div style="height:8px; background:repeating-linear-gradient(135deg,#00f5ff 0 8px,#0c0c10 8px 16px); margin-bottom:10px;"></div>
                 <div style="display:flex; justify-content:space-between; font-size:9px; letter-spacing:.18em; color:#8b88a8; margin-bottom:8px;">
-                    <span>SPOTIFY DECK // ZZZ-STREAM</span><span style="color:#ff3fa4">&#9679; LINKED</span>
+                    <span>SPOTIFY DECK // STREAM</span><span style="color:#ff3fa4">&#9679; LINKED</span>
                 </div>
             ''', unsafe_allow_html=True)
             
@@ -250,7 +246,7 @@ with c1:
             except Exception:
                 components.iframe("https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0", height=380, scrolling=False)
             
-            st.markdown('<div class="note" style="margin-top:10px; font-size:9px; color:#8b88a8; letter-spacing:.08em;">DIRECT EMBED STREAM // CLIPPED VIA ZZZ OS CABINET PROTOCOL.</div></div>', unsafe_allow_html=True)
+            st.markdown('<div class="note" style="margin-top:10px; font-size:9px; color:#8b88a8; letter-spacing:.08em;">DIRECT EMBED STREAM // CLIPPED VIA SPOTIFY API.</div></div>', unsafe_allow_html=True)
 
 with c2:
     with st.container(key="menu"):
@@ -302,8 +298,15 @@ with c3:
             for t_ in S.saved: 
                 st.markdown(f'<div class="plain" style="margin-bottom:8px">✦ {html.escape(t_)}</div>', unsafe_allow_html=True)
         elif view == "NOTEPAD":
-            st.text_area("Write what you noticed while reading.", key="note", height=260)
+            st.text_area("Write whatever you want here.", key="note", height=260)
         else:
-            st.markdown('<div class="plain">Visual direction: Zenless Zone Zero\'s CRT-and-hazard-stripe interface and urban cassette futurism. Music plays from a local cache of MP3 files or the Spotify Embed player tab. Album covers are looked up via Spotify search, with generated cover art as a fallback. Posts come from Reddit (official API when keys are set, otherwise the public RSS feed). Post images come from Reddit previews; posts without one get procedurally generated art.</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="plain">Visual direction: Inspired by <em>Zenless Zone Zero</em>\'s CRT-and-hazard-stripe interface and urban cassette futurism, alongside the Frutiger Aero, Nintendo, and Dreamcast aesthetics of <a href="https://www.youtube.com/watch?v=d3KfkKXRDzk" target="_blank">Sanctuary OS</a> by <strong>Dusqk</strong>. Music plays from a local cache of MP3 files or the Spotify Embed player tab. Album covers are looked up via Spotify search, with generated cover art as a fallback. Posts come from Reddit (official API when keys are set, otherwise the public RSS feed). Post images come from Reddit previews; posts without one get procedurally generated art.</div>',
+                unsafe_allow_html=True,
+            )
+            st.markdown(
+                '<iframe width="100%" height="400" src="https://www.youtube.com/embed/d3KfkKXRDzk" title="Sanctuary OS Showcase" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+                unsafe_allow_html=True,
+            )
 
 st.markdown('<div class="status"><span>WORLDWIDE (SX)</span><span>MODULAR PATTERN ▸</span><span>SIDE A ◂▸ SIDE B</span><span>01:45:51</span></div>', unsafe_allow_html=True)
