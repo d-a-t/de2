@@ -40,13 +40,17 @@ st.markdown("""<style>
     --dim: #8c95ad;
 }
 
+.stApp, [data-testid=stAppViewContainer] {
+    background: radial-gradient(circle at 12% 0%, rgba(110, 56, 190, .42), transparent 48%),
+                radial-gradient(circle at 92% 100%, rgba(0, 190, 215, .26), transparent 52%),
+                var(--bg) !important;
+    background-attachment: fixed !important;
+}
 .stApp {
-    background: radial-gradient(circle at 15% 0%, #1a1e36, transparent 45%),
-                radial-gradient(circle at 90% 95%, #102638, transparent 50%),
-                var(--bg);
     font-family: 'Space Mono', monospace;
     color: var(--ink);
 }
+[data-testid=stMain], [data-testid=stMainBlockContainer] { background: transparent !important; }
 
 .stApp::before {
     content: "";
@@ -72,7 +76,7 @@ st.markdown("""<style>
 
 header[data-testid=stHeader] { background: transparent; }
 [data-testid=stSidebar], footer { display: none; }
-.block-container { max-width: 1520px; padding-top: 1.1rem; position: relative; z-index: 2; }
+.block-container { max-width: 1520px; padding: 1.1rem 3.2rem 1rem 2.4rem !important; position: relative; z-index: 2; }
 
 .top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .badge { font: 400 15px Anton; letter-spacing: .1em; background: var(--yellow); color: var(--bg); padding: 6px 16px; transform: skewX(-10deg); }
@@ -155,7 +159,8 @@ header[data-testid=stHeader] { background: transparent; }
 @keyframes crawl { to { background-position: -20px 0; } }
 @keyframes sp { to { transform: rotate(360deg); } }
 
-.barcode { position: fixed; right: 8px; top: 22%; height: 38%; width: 20px; background: repeating-linear-gradient(0deg, var(--yellow) 0 2px, transparent 2px 4px, var(--yellow) 4px 5px, transparent 5px 9px); opacity: .7; z-index: 5; }
+.barcode { position: fixed; right: 12px; top: 22%; height: 38%; width: 14px; background: repeating-linear-gradient(0deg, var(--yellow) 0 2px, transparent 2px 5px, var(--yellow) 5px 6px, transparent 6px 11px); opacity: .55; z-index: 1; pointer-events: none; }
+@media (max-width: 1100px) { .barcode { display: none; } }
 
 .sleepy-cat-corner {
     position: fixed;
