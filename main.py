@@ -6,6 +6,8 @@ from data import get_posts, art
 from music import load_library, MUSIC_DIR, clear_cover_cache
 from spotify import has_keys
 from local_player import player_html
+from scroll_proto_player import scroll_proto_html
+from sonic_deck import sonic_deck_html
 
 st.set_page_config(
     page_title="Formicapunk OS", 
@@ -21,6 +23,7 @@ S.setdefault("saved", [])
 S.setdefault("per", 3)
 S.setdefault("spooling", False)
 S.setdefault("player_mode", "CASSETTE DECK")
+S.setdefault("force_svg_fallback", False)
 
 SRC = {"API": "REDDIT API", "RSS": "REDDIT RSS", "JSON": "REDDIT JSON"}.get(posts[0].get("src", ""), "REDDIT") if live else ""
 
@@ -102,6 +105,15 @@ header[data-testid=stHeader] { background: transparent; }
 .st-key-menu label:has(input:checked) p { color: var(--bg) !important; }
 .st-key-menu label:has(input:checked)::before { color: var(--bg); }
 .st-key-menu label:hover { border-color: var(--cyan); transform: translateX(4px) skewX(-6deg); }
+
+.st-key-audiomode { margin-bottom: 10px; }
+.st-key-audiomode [role=radiogroup] { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.st-key-audiomode label { background: var(--p2); border: 2px solid var(--ln); padding: 8px 6px; cursor: pointer; transform: skewX(-4deg); transition: .15s; margin: 0 !important; justify-content: center; }
+.st-key-audiomode label>div:first-child { display: none; }
+.st-key-audiomode label p { font: 400 13px Anton !important; letter-spacing: .06em; color: var(--dim) !important; text-align: center; }
+.st-key-audiomode label:has(input:checked) { background: var(--yellow); border-color: var(--yellow); box-shadow: 3px 3px 0 var(--magenta); }
+.st-key-audiomode label:has(input:checked) p { color: var(--bg) !important; }
+.st-key-audiomode label:hover { border-color: var(--cyan); }
 
 .stats { display: flex; gap: 10px; justify-content: flex-end; margin-bottom: 6px; }
 .tile { border: 2px solid var(--ln); background: var(--p2); padding: 4px 14px; text-align: center; font: 700 9px 'Space Mono'; color: var(--dim); letter-spacing: .14em; }
@@ -200,8 +212,9 @@ def loading_spool_animation(active=False):
 
 def card(p, i, n):
     e = html.escape
-    tag = "REDDIT IMG" if p.get("image") else "GENERATED ART"
-    img = f'<img alt="" referrerpolicy="no-referrer" loading="lazy" src="{e(p["image"])}">' if p.get("image") else ""
+    use_img = bool(p.get("image")) and not S.force_svg_fallback
+    tag = "REDDIT IMG" if use_img else "GENERATED ART"
+    img = f'<img alt="" referrerpolicy="no-referrer" loading="lazy" src="{e(p["image"])}">' if use_img else ""
     sc = "—" if p.get("score") is None else p["score"]
     cm = "—" if p.get("num_comments") is None else p["num_comments"]
     return (f'<div class="card" style="--i:{n}"><div class="pic"><img alt="" src="{art(p["title"], p["subreddit"])}">{img}'
@@ -209,18 +222,40 @@ def card(p, i, n):
             f'<div class="l"><span>✦ r/{e(p["subreddit"])}</span><span>TRK {i+1:03d}</span></div><h3>{e(p["title"])}</h3><p>{e(p["selftext"])}</p>'
             f'<small>u/{e(p["author"])} · ▲ {sc} · 💬 {cm}</small></div></div>')
 
+svg_count = sum(1 for p in posts if S.force_svg_fallback or not p.get("image"))
+
 st.markdown(f"""<div class="top"><span class="badge">FORMICAPUNK®</span><span class="title">Feed <span class="os">✦ OS</span></span></div>
-<div class="mini"><span>[ SLOW MODE ]</span><span class="pill">2026</span><span class="hex">NOVEMBER</span><span>TAPE: LOCAL CACHE // {len(tracks):02d} TRK</span><span class="live">● {('LIVE // ' + SRC) if live else 'OFFLINE // USING SAMPLE POSTS'}</span></div>""", unsafe_allow_html=True)
+<div class="mini"><span>[ SLOW MODE ]</span><span class="pill">2026</span><span class="hex">NOVEMBER</span><span>TAPE: LOCAL CACHE // {len(tracks):02d} TRK</span><span class="live">● {('LIVE // ' + SRC) if live else 'OFFLINE // SAMPLE + SVG FALLBACK'}</span></div>""", unsafe_allow_html=True)
 
 c1, c2, c3 = st.columns([1.2, 1.0, 3.4], gap="medium")
 
 with c1:
-    # Player Mode Switcher Tab
-    player_choice = st.radio("AUDIO SOURCE", ["CASSETTE DECK", "SPOTIFY EMBED"], horizontal=True, label_visibility="collapsed", key="player_mode_select")
+    # 4-Deck Audio Source Switcher: DE2 static decks + Early Raw Scroll Prototype + DE3 Dampened Tuner
+    with st.container(key="audiomode"):
+        player_choice = st.radio(
+            "AUDIO SOURCE",
+            ["CASSETTE DECK", "SPOTIFY EMBED", "SCROLL SYNTH", "SONIC DECK"],
+            horizontal=True,
+            label_visibility="collapsed",
+            key="player_mode_select",
+        )
     S.player_mode = player_choice
-    
+
     if S.player_mode == "CASSETTE DECK":
         components.html(player_html(tracks, MUSIC_DIR), height=830, scrolling=False)
+    elif S.player_mode == "SCROLL SYNTH":
+        components.html(
+            scroll_proto_html(
+                live_feed=live,
+                feed_source=SRC or "SAMPLE",
+                svg_count=svg_count,
+                total_posts=len(posts),
+            ),
+            height=830,
+            scrolling=False,
+        )
+    elif S.player_mode == "SONIC DECK":
+        components.html(sonic_deck_html(), height=830, scrolling=False)
     else:
             # Styled ZZZ OS Container matching the cassette deck aesthetics
             st.markdown('''
@@ -288,7 +323,16 @@ with c3:
                     st.markdown('<div class="plain" style="text-align:center">END OF TAPE. The timeline stops here on purpose.</div>', unsafe_allow_html=True)
         elif view == "SETTINGS":
             S.per = st.select_slider("POSTS PER SIDE", [2, 3, 4], value=S.per)
-            #st.markdown(f'<div class="plain">MUSIC FOLDER: <b style="color:var(--yellow)">{html.escape(str(MUSIC_DIR))}</b><br>TRACKS FOUND: {len(tracks)}<br>COVER SEARCH: <b style="color:var(--yellow)">{"SPOTIFY ON" if has_keys() else "SPOTIFY OFF (add keys)"}</b><br>POSTS FROM: <b style="color:var(--yellow)">{SRC or "SAMPLE DATA"}</b><br>To search Spotify for covers, add <code>SPOTIFY_CLIENT_ID</code> and <code>SPOTIFY_CLIENT_SECRET</code> to <code>.streamlit/secrets.toml</code>. For the official Reddit API, add <code>REDDIT_CLIENT_ID</code> and <code>REDDIT_CLIENT_SECRET</code>. Restart after changing keys.</div>', unsafe_allow_html=True)
+            st.toggle("PREVIEW SVG FALLBACK ART (OFFLINE)", key="force_svg_fallback")
+            st.markdown(
+                f'<div class="plain" style="margin-bottom:10px;">'
+                f'MUSIC FOLDER: <b style="color:var(--yellow)">{html.escape(str(MUSIC_DIR))}</b> ({len(tracks)} TRACKS)<br>'
+                f'COVER SEARCH: <b style="color:var(--yellow)">{"SPOTIFY ON" if has_keys() else "SPOTIFY OFF"}</b><br>'
+                f'FEED SOURCE: <b style="color:var(--cyan)">{html.escape(SRC or "SAMPLE PLACEHOLDER DATA")}</b><br>'
+                f'SVG FALLBACK CARDS: <b style="color:var(--magenta)">{svg_count} / {len(posts)}</b>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
             if st.button("RE-SEARCH COVERS"): 
                 clear_cover_cache()
                 st.rerun()
@@ -301,7 +345,13 @@ with c3:
             st.text_area("Write whatever you want here.", key="note", height=260)
         else:
             st.markdown(
-                '<div class="plain">Visual direction: Inspired by <em>Zenless Zone Zero</em>\'s CRT-and-hazard-stripe interface and urban cassette futurism, alongside the Frutiger Aero, Nintendo, and Dreamcast aesthetics of <a href="https://www.youtube.com/watch?v=d3KfkKXRDzk" target="_blank">Sanctuary OS</a> by <strong>Dusqk</strong>. Music plays from a local cache of MP3 files or the Spotify Embed player tab. Album covers are looked up via Spotify search, with generated cover art as a fallback. Posts come from Reddit (WHEN IT WORKS, GOD DAMMIT REDDIT). Post images come from Reddit previews; posts without one get procedurally generated art.</div>',
+                '<div class="plain">'
+                'Visual direction: Inspired by <em>Zenless Zone Zero</em>\'s CRT-and-hazard-stripe interface and urban cassette futurism, alongside the Frutiger Aero, Nintendo, and Dreamcast aesthetics of <a href="https://www.youtube.com/watch?v=d3KfkKXRDzk" target="_blank">Sanctuary OS</a> by <strong>Dusqk</strong>.<br><br>'
+                '<strong>Audio Evolution (DE2 &rarr; Prototype &rarr; DE3):</strong><br>'
+                '&bull; <b>CASSETTE DECK &amp; SPOTIFY EMBED (DE2):</b> Static pacing via local MP3 cache or Spotify iframe.<br>'
+                '&bull; <b>SCROLL SYNTH (Early Prototype):</b> Unthrottled scroll-velocity-to-tempo synthesis demonstrating erratic BPM spikes during auto-scroll and RSS/SVG fallback layout height shifts.<br>'
+                '&bull; <b>SONIC DECK (DE3 Tuner):</b> Dampened tempo controller with layout-shift filtering, fast-scroll thresholds, and interactive synth layer controls for intentional user agency.'
+                '</div>',
                 unsafe_allow_html=True,
             )
             st.markdown(

@@ -153,7 +153,8 @@ def get_posts():
                     "subreddit": "all",
                     "score": 42,
                     "num_comments": 0,
-                    "image": None
+                    "image": None,
+                    "src": "RSS"
                 })
             
             if posts:
