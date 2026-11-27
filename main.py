@@ -6,7 +6,7 @@ import yaml
 import streamlit as st
 import streamlit.components.v1 as components
 
-from data import SAMPLE, art, get_posts
+from data import SAMPLE, art, generate_lorem_posts, get_posts
 from local_player import player_html
 from music import MUSIC_DIR, clear_cover_cache, load_library
 from scroll_proto_player import scroll_proto_html
@@ -209,7 +209,10 @@ def render_spotify_deck():
 
 def render_feed_view(per):
     with st.container(height=700, key="feedscroll", border=False):
-        shown = posts[: S.block * per]
+        needed = S.block * per
+        if needed > len(posts):
+            posts.extend(generate_lorem_posts(needed - len(posts), start_idx=len(posts)))
+        shown = posts[:needed]
         for i, p in enumerate(shown):
             st.markdown(card(p, i, i % per), unsafe_allow_html=True)
             done = p["title"] in S.saved
@@ -224,21 +227,30 @@ def render_feed_view(per):
                     open_comments_window(p, i)
             if (i + 1) % per == 0:
                 st.markdown('<div class="gap"></div>', unsafe_allow_html=True)
-        if len(shown) < len(posts):
-            st.markdown(loading_spool_animation(active=S.spooling), unsafe_allow_html=True)
-            msg = st.empty()
-            if st.button("▶ LOAD NEXT SIDE", use_container_width=True, disabled=S.spooling):
-                S.spooling = True
-                st.rerun()
-            if S.spooling:
-                for sec in range(3, 0, -1):
-                    msg.markdown(f"<p class='cap' style='text-align:center'>ROLLING UP TAPE ... {sec}</p>", unsafe_allow_html=True)
-                    time.sleep(1)
-                S.spooling = False
-                S.block += 1
-                st.rerun()
-        else:
-            st.markdown('<div class="plain" style="text-align:center">END OF TAPE. The timeline stops here on purpose.</div>', unsafe_allow_html=True)
+
+        beyond_base = len(shown) >= len(SAMPLE)
+        if beyond_base:
+            st.markdown(
+                '<div class="plain" style="text-align:center; margin-bottom:8px;">'
+                'BEYOND END OF TAPE // DYNAMIC LOREM IPSUM GENERATOR ACTIVE'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+        st.markdown(loading_spool_animation(active=S.spooling), unsafe_allow_html=True)
+        msg = st.empty()
+        btn_label = "▶ GENERATE MORE (LOREM TAPE)" if beyond_base else "▶ LOAD NEXT SIDE"
+        if st.button(btn_label, use_container_width=True, disabled=S.spooling):
+            S.spooling = True
+            st.rerun()
+        if S.spooling:
+            for sec in range(3, 0, -1):
+                msg.markdown(f"<p class='cap' style='text-align:center'>ROLLING UP TAPE ... {sec}</p>", unsafe_allow_html=True)
+                time.sleep(1)
+            S.spooling = False
+            S.block += 1
+            if S.block * per > len(posts):
+                posts.extend(generate_lorem_posts(S.block * per - len(posts), start_idx=len(posts)))
+            st.rerun()
 
 
 def render_sheets_view():
@@ -313,7 +325,7 @@ def render_sheets_view():
 
 
 def render_settings_view():
-    S.per = st.select_slider("POSTS PER SIDE", [2, 3, 4], value=S.per)
+    S.per = st.select_slider("POSTS PER SIDE", list(range(2, 31)), value=S.per)
     st.toggle("PREVIEW SVG FALLBACK ART (OFFLINE)", key="force_svg_fallback")
     st.markdown(
         f'<div class="plain" style="margin-bottom:10px;">'

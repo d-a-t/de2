@@ -1,6 +1,6 @@
 """Shared data loader: live Reddit JSON when online, bundled sample posts otherwise.
 Each post may carry an 'image' URL (Reddit preview/thumbnail). art() builds a generated fallback image."""
-import html, hashlib, requests, streamlit as st
+import html, hashlib, random, requests, streamlit as st
 import xml.etree.ElementTree as ET
 from urllib.parse import quote
 
@@ -929,6 +929,612 @@ SAMPLE = [
         ]
     }
 ]
+
+_COMMON_SUB_BANK = {
+    "AskReddit": {
+        "img": None,
+        "topics": [
+            ("What small daily habit quietly improved your life more than you expected?", "Started keeping a glass of water by my bed and leaving my phone in the hallway."),
+            ("What movie scene gives you chills every single time you rewatch it?", "Mine is the docking sequence in Interstellar with the organ swelling."),
+            ("What is a skill that takes less than 20 hours to learn but pays off forever?", "Touch typing and basic knife skills in the kitchen."),
+            ("What obsolete piece of technology do you genuinely miss?", "Dedicated MP3 players with physical buttons you could operate inside your pocket."),
+            ("What is the best piece of advice someone gave you in passing?", "Never take criticism from someone you wouldn't take advice from."),
+            ("Which video game soundtrack still lives rent-free in your head?", "Chrono Trigger and Donkey Kong Country 2 still hit like magic."),
+            ("What is something that used to be a luxury and is now an everyday annoyance?", "Constant instant reachability via smartphones."),
+            ("What book made you sit in silence for ten minutes after finishing the last page?", "The Left Hand of Darkness by Ursula K. Le Guin."),
+        ],
+        "replies": [
+            "Honestly, this thread is the exact reminder I needed today.",
+            "I tried this six months ago and never looked back. Total game changer.",
+            "Underrated answer right here. More people need to hear this.",
+            "Came here expecting jokes, leaving with genuinely solid life advice.",
+            "Hard disagree on the second half, though the first point is spot on.",
+        ],
+    },
+    "todayilearned": {
+        "img": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("TIL that Nintendo was founded in 1889 as a playing card company in Kyoto.", "They made handmade hanafuda cards long before video games existed."),
+            ("TIL octopuses have three hearts, nine brains, and blue copper-based blood.", "Two hearts pump blood to the gills while the third circulates it to the body."),
+            ("TIL the Voyager 1 Golden Record carries 90 minutes of music and greetings in 55 languages.", "It is currently over 15 billion miles away from Earth."),
+            ("TIL sharks existed before trees and before Saturn's rings formed.", "Fossil evidence dates early shark species back more than 400 million years."),
+            ("TIL Oxford University is older than the Aztec Empire by more than two centuries.", "Teaching existed at Oxford in 1096; Tenochtitlan was founded in 1325."),
+            ("TIL honey found in ancient Egyptian tombs is still edible after 3,000 years.", "Low moisture and natural acidity prevent bacteria from growing."),
+            ("TIL the 'Amen Break' is a 6-second drum solo from 1969 that birthed entire genres.", "It became the backbone of hip-hop, jungle, and drum and bass."),
+            ("TIL astronauts grow up to 2 inches taller in space due to spinal decompression.", "Gravity normally compresses the vertebrae on Earth."),
+        ],
+        "replies": [
+            "The fact that sharks predate trees always breaks my sense of deep time.",
+            "There's a great documentary about the Amen Break and how it shaped electronic music.",
+            "Imagine how wild it must be to taste 3,000-year-old tomb honey.",
+            "Every time I read about Voyager 1, I'm amazed the transmitter still responds.",
+            "Classic TIL, but still fascinating every time it pops up.",
+        ],
+    },
+    "Showerthoughts": {
+        "img": None,
+        "topics": [
+            ("Your stomach thinks all potatoes are mashed.", "Once you chew them, there's really no difference down there."),
+            ("A library is just a physical cloud server for stories.", "Zero subscription fees and no battery anxiety."),
+            ("Every mirror you've ever bought at a store was technically used.", "Someone else already looked into it before you."),
+            ("Sleeping is basically a free trial of turning it off and back on again.", "Works surprisingly well for both computers and humans."),
+            ("Music is just wiggly air that makes humans feel emotions.", "Different frequencies of pressure waves somehow equal nostalgia."),
+            ("Reading a book is staring at marked dead trees and hallucinating vividly.", "Humans really invented telepathy across centuries."),
+            ("The first person to hear a parrot talk must have been terrified.", "Imagine walking through the woods and a bird repeats your sentence."),
+            ("We spend the first year of life learning to walk and talk, and the rest sitting down and being quiet.", "Strange reversal of priorities."),
+        ],
+        "replies": [
+            "This is peak 2 AM ceiling-staring philosophy.",
+            "I will never look at mashed potatoes the same way again.",
+            "Wiggly air is honestly the most accurate description of music.",
+            "Wait until you realize your tongue knows how every surface feels just by looking at it.",
+        ],
+    },
+    "gaming": {
+        "img": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Games that respect your time with a clean 12-hour campaign are a breath of fresh air.", "Not every title needs 150 hours of repetitive map icons."),
+            ("What single-player game has the most atmospheric hub world?", "Firelink Shrine in Dark Souls and Majula in DS2 still feel unmatched."),
+            ("Why do 2000s UI sound effects feel so much punchier than modern minimalist menus?", "Every button press had tactile weight and personality."),
+            ("Replaying PS2 classics on a CRT makes you realize how much motion clarity we lost.", "Zero sample-and-hold blur makes 60fps look liquid smooth."),
+            ("Indie devs are carrying the entire medium right now with weird, focused experiments.", "Small teams taking real creative risks."),
+            ("Do you ever boot up a game just to hang out in the town and listen to the music?", "Sometimes the vibe is the whole point."),
+            ("Local split-screen co-op deserves a massive comeback.", "Nothing beats sitting on the same couch with four controllers."),
+            ("Dynamic music that layers instruments as you enter combat never gets old.", "Interactive audio elevates every boss fight."),
+        ],
+        "replies": [
+            "Majula's acoustic guitar theme hits my soul every single time.",
+            "Give me a tight 10-hour handcrafted campaign over a bloated 100-hour checklist any day.",
+            "CRTs really were black magic for motion resolution.",
+            "Adaptive soundtracks like in Portal 2 and Hades are pure art.",
+            "Split-screen Halo 3 nights were peak gaming.",
+        ],
+    },
+    "science": {
+        "img": "https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Deep-sea researchers document bioluminescent organisms communicating in rhythmic pulses.", "Light patterns appear to coordinate feeding behavior at 2,000 meters."),
+            ("New battery electrolyte formulation survives 4,000 charge cycles with minimal degradation.", "Solid-state prototypes continue moving closer to commercial scale."),
+            ("Study finds forest mycorrhizal networks redistribute carbon to shaded seedlings.", "Underground fungal threads act like a slow-motion nutrient grid."),
+            ("Astronomers map unexpected water vapor plumes on an icy outer-system moon.", "Spectroscopy data confirms active subsurface chemistry."),
+            ("Acoustic metamaterials can now block low-frequency urban noise using thin panels.", "Tuned resonance chambers cancel hum without heavy foam."),
+            ("Researchers synthesize biodegradable circuit boards from mycelium and cellulose.", "E-waste reduction could start at the substrate level."),
+            ("Long-term sleep study links consistent wake times to sharper memory consolidation.", "Regularity matters even more than total weekend catch-up hours."),
+            ("Ocean buoys detect subtle shifts in deep-current thermal transport.", "Continuous sensor arrays are improving climate model resolution."),
+        ],
+        "replies": [
+            "Acoustic metamaterials for apartment walls would sell out overnight.",
+            "Fungal networks being nature's fiber-optic grid never ceases to amaze me.",
+            "4,000 cycles would mean a phone battery outlasts the rest of the hardware by a decade.",
+            "Peer-reviewed replication will be key here, but the methodology looks solid.",
+        ],
+    },
+    "technology": {
+        "img": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Right-to-repair laws push modular laptops with user-swappable GPUs and ports.", "Standardized screws and schematic diagrams are making a comeback."),
+            ("Open-source local AI models now run smoothly on modest desktop hardware.", "Privacy-first offline tooling is maturing rapidly."),
+            ("E-ink monitors are finding a dedicated niche among writers and programmers.", "Zero flicker and paper-like contrast under natural light."),
+            ("Why small, single-purpose gadgets often outlast do-everything smart devices.", "No forced cloud servers means they never get bricked."),
+            ("Mesh networking experiments bring resilient community Wi-Fi to rural valleys.", "Low-power solar nodes bridging miles of terrain."),
+            ("Web browsers are testing built-in reader modes that strip trackers and bloat.", "A 40KB article shouldn't require 18MB of JavaScript."),
+            ("Physical knobs and tactile switches are returning to car dashboards.", "Safety testing proved touchscreens force eyes off the road."),
+            ("Self-hosting personal photos and music on a tiny home server is easier than ever.", "Own your archive without monthly rent."),
+        ],
+        "replies": [
+            "Bring back physical climate-control dials in every car immediately.",
+            "A 18MB webpage for three paragraphs of text is modern web insanity.",
+            "Self-hosting my music library on a local NAS was the best tech project I did this year.",
+            "Right-to-repair is the single most important consumer tech movement right now.",
+        ],
+    },
+    "movies": {
+        "img": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Practical miniatures and matte paintings still age better than most modern CGI.", "Real light hitting physical models has undeniable weight."),
+            ("What film has the best opening 10 minutes with almost no dialogue?", "Up, There Will Be Blood, and WALL-E come to mind immediately."),
+            ("Why 90-minute tight thrillers feel rarer—and better—than 3-hour epics.", "Pacing is a lost art when editors aren't afraid to cut."),
+            ("Sound design appreciation: the subtle room tone in quiet sci-fi films.", "Silence and low hums build more tension than loud explosions."),
+            ("Rewatching Blade Runner 2049 on a good sound system is a religious experience.", "Every synth swell vibrates through the floorboards."),
+            ("Which director consistently uses color palettes to tell half the story?", "Wong Kar-wai and Wes Anderson turn every frame into a painting."),
+            ("Midnight repertory screenings of 35mm prints beat streaming at home every time.", "Hearing a crowd react together is irreplaceable."),
+            ("What underrated soundtrack completely elevates its movie?", "Tron: Legacy and The Social Network are masterpieces."),
+        ],
+        "replies": [
+            "The miniature work in The Thing and Blade Runner still looks jaw-dropping.",
+            "Tight 95-minute movies are undefeated on a weeknight.",
+            "WALL-E's first 30 minutes is a silent film masterclass.",
+            "Nothing beats seeing a 35mm print in an old theater with real grain.",
+        ],
+    },
+    "music": {
+        "img": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Listening to an entire album front-to-back without skipping feels radical now.", "Track sequencing used to be an art form of its own."),
+            ("What album sounds completely different—and better—when played at night?", "Burial's Untrue and Portishead's Dummy belong to 2 AM rain."),
+            ("Why odd time signatures like 7/8 and 5/4 feel hypnotic when grooved right.", "Your brain stops counting and starts riding the cycle."),
+            ("Collecting physical CDs and cassettes again because streaming catalogs vanish.", "Nothing beats owning an album nobody can delist."),
+            ("What bassline is so good you immediately recognize the song in two notes?", "Chameleon by Herbie Hancock and Money by Pink Floyd."),
+            ("Live studio sessions where you can hear the room acoustics beat over-polished mixes.", "Tiny imperfections make music breathe."),
+            ("Game and anime OSTs are introducing millions to jazz fusion and breakbeat.", "Japanese city pop and Shibuya-kei live on in modern soundtracks."),
+            ("What instrument tone immediately gives you goosebumps?", "A warm Rhodes electric piano through a gentle tremolo."),
+        ],
+        "replies": [
+            "Untrue by Burial at 2 AM in a rainy city is an unmatched atmosphere.",
+            "Odd meters like 7/8 feel natural once you stop overthinking the beat.",
+            "Owning physical media means your favorite tracks never disappear over licensing.",
+            "Rhodes + tape echo is instant serotonin.",
+        ],
+    },
+    "pics": {
+        "img": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Fog rolling over the valley right before sunrise this morning.", "Caught five minutes of pink light before it vanished."),
+            ("An abandoned neon sign still humming in the alley after a summer storm.", "Reflections on wet asphalt never get old."),
+            ("My grandfather's 1974 workbench, untouched since he retired.", "Every chisel and ruler has its exact silhouette on the pegboard."),
+            ("Empty subway station in Tokyo at 1:15 AM after the last train.", "Quiet geometry and fluorescent hum."),
+            ("Sunlight refracting through a prism onto an old stack of vinyl records.", "accidental rainbow across the sleeves."),
+            ("Morning frost patterns on a greenhouse windowpane.", "Looks like fern leaves drawn in ice."),
+            ("The view from a fire lookout tower above the clouds.", "Worth every mile of the hike up."),
+            ("A stray cat sleeping on a warm CRT monitor at a repair shop.", "Peak cozy energy."),
+        ],
+        "replies": [
+            "That pegboard silhouette organization is deeply satisfying.",
+            "The reflections on wet pavement look straight out of a movie still.",
+            "Cats always find the warmest piece of vintage electronics in any room.",
+            "Amazing light—five minutes later and that shot is gone forever.",
+        ],
+    },
+    "funny": {
+        "img": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("My cat stared at an empty corner for 20 minutes and now I'm checking property listings.", "Either there's a ghost or a tiny moth and I'm not waiting to find out."),
+            ("I bought a label maker and now nothing in my kitchen is safe.", "Even the toaster is labeled 'TOASTER'."),
+            ("Accidentally said 'you too' when the delivery driver told me to enjoy my food.", "Guess I have to move to another city now."),
+            ("Me at 11 PM: I will wake up at 6 AM and conquer the world. Me at 6 AM: snooze.", "Two completely different people inhabit this body."),
+            ("Tried to take a 'quick' 20-minute nap and woke up in a different century.", "Didn't know what day, year, or planet it was."),
+            ("My brain remembers every lyric to a 2006 commercial jingle, but not why I walked into the kitchen.", "Storage priorities are broken."),
+            ("Put my phone down to rest my eyes, immediately picked up my bigger screen.", "Digital minimalism is going great."),
+            ("Ordered one wrench online and it arrived in a box large enough for a refrigerator.", "At least I got four miles of bubble wrap."),
+        ],
+        "replies": [
+            "The label maker phase is a rite of passage. Label the label maker next.",
+            "Waking up from a 3-hour accidental nap with pillow creases on your face is pure time travel.",
+            "Your cat definitely saw a greeble in the corner.",
+            "I once said 'love you' to my dentist by accident. You'll recover in 5-7 years.",
+        ],
+    },
+    "aww": {
+        "img": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Adopted this senior shelter dog today and he immediately fell asleep on my shoes.", "Ten years old and already owns the living room."),
+            ("Tiny ducklings learning how to navigate a garden step for the first time.", "Lots of wobbling, zero regrets."),
+            ("My rescue cat finally trusted me enough to sit on my keyboard during work.", "Productivity dropped 100%, happiness rose 500%."),
+            ("Two golden retrievers greeting each other with their favorite plush toys.", "Pure tail-wagging diplomacy."),
+            ("A hedgehog curled up inside a knitted wool mitten.", "Peak winter coziness."),
+            ("Baby otter floating on its back holding its mom's paw.", "Nature's sweetest anchor."),
+            ("Crow brought a shiny bottle cap to the balcony after we left unsalted peanuts.", "Building an avian trade network."),
+            ("Golden hour nap in a sunbeam on the living room rug.", "Charging solar batteries."),
+        ],
+        "replies": [
+            "Thank you for adopting a senior pup! They have the gentlest souls.",
+            "If a cat sits on your keyboard, it's legally a mandatory break.",
+            "A crow trade network is the ultimate neighborhood perk.",
+            "10/10 would let him sleep on my shoes forever.",
+        ],
+    },
+    "LifeProTips": {
+        "img": None,
+        "topics": [
+            ("LPT: Keep a 'done' list alongside your to-do list so you actually see your progress.", "Reduces end-of-day burnout dramatically."),
+            ("LPT: If a task takes less than two minutes, do it immediately instead of scheduling it.", "Stops tiny chores from piling into a mountain."),
+            ("LPT: Freeze leftover coffee in ice cube trays for iced coffee that never waters down.", "Simple, cheap, and works every summer."),
+            ("LPT: Take a photo of the back of your router/TV before unplugging cables to move.", "Saves 30 minutes of squinting at ports later."),
+            ("LPT: Set your phone to grayscale two hours before bed to make scrolling boring.", "Your brain naturally puts it down faster."),
+            ("LPT: Always pack a spare pair of socks and a small flashlight in your car glovebox.", "You only need them once to be glad they're there."),
+            ("LPT: Read the 3-star reviews on products—they're usually the most honest and detailed.", "Less hype, less rage, more real pros and cons."),
+            ("LPT: Rename your saved files with YYYY-MM-DD at the start so they sort chronologically.", "Future you will thank present you."),
+        ],
+        "replies": [
+            "YYYY-MM-DD is the only sane date format for file naming.",
+            "The 3-star review trick is genuinely the smartest shopping habit.",
+            "Grayscale mode before bed cut my late-night screen time in half.",
+            "Coffee ice cubes are elite-tier summer prep.",
+        ],
+    },
+    "explainlikeimfive": {
+        "img": None,
+        "topics": [
+            ("ELI5: Why does music sound sadder in a minor key and happier in a major key?", "Frequency ratios and cultural conditioning both play a role."),
+            ("ELI5: How do noise-canceling headphones erase sound using more sound?", "Destructive wave interference flips the waveform upside down."),
+            ("ELI5: Why does time seem to speed up as we get older?", "Fewer novel memories per year makes stretches blend together."),
+            ("ELI5: How does a vinyl record needle turn tiny plastic grooves into a full orchestra?", "Microscopic left-right and up-down vibrations drive a tiny magnet."),
+            ("ELI5: Why do we see different colors on a screen using only red, green, and blue dots?", "Human eyes have three types of color cones that blend those signals."),
+            ("ELI5: How does an airplane wing actually keep a heavy metal tube in the sky?", "Air pressure differences and downward deflection of airflow."),
+            ("ELI5: Why does hot water freeze faster than cold water in certain conditions?", "The Mpemba effect involves convection, evaporation, and supercooling."),
+            ("ELI5: How do submarines navigate underwater without GPS signals?", "Inertial gyroscopes, sonar mapping, and ocean floor charts."),
+        ],
+        "replies": [
+            "Think of noise canceling like two opposite ocean waves meeting and flattening out!",
+            "The vinyl needle explanation still feels like magic—a rock dragging through plastic makes a symphony.",
+            "Novelty compressing perceived time is why traveling makes a weekend feel like a week.",
+            "Super clear breakdown, thank you!",
+        ],
+    },
+    "space": {
+        "img": "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("James Webb captures crystal-clear infrared rings around a distant dusty star.", "Each concentric shell marks a periodic stellar wind pulse."),
+            ("Perseverance rover spots layered sedimentary rocks in an ancient Martian delta.", "Clear signs of slow-moving water billions of years ago."),
+            ("Amateur astronomers photograph Jupiter's Great Red Spot from a backyard 8-inch Dobsonian.", "Lucky imaging stacks thousands of frames into sharp detail."),
+            ("Why Titan's thick nitrogen atmosphere makes it one of the most fascinating moons.", "Methane rain, liquid lakes, and low gravity."),
+            ("Observing the Orion Nebula through binoculars on a moonless winter night.", "That faint fuzzy patch is a stellar nursery 1,344 light-years away."),
+            ("How solar sails use pure photon momentum to propel spacecraft without fuel.", "Sunlight itself becomes the wind."),
+            ("Mapping the cosmic web: galaxies arranged along vast filaments of dark matter.", "The universe looks remarkably like a neural network at grand scale."),
+            ("Listening to radio emissions from Saturn converted into eerie audio waves.", "Plasma oscillations sound like a sci-fi synth pad."),
+        ],
+        "replies": [
+            "Saturn's radio emissions genuinely sound like an ambient modular synth.",
+            "Backyard astrophotography with lucky imaging blows my mind every time.",
+            "Titan having methane rain and thick haze makes it feel like a retro sci-fi cover.",
+            "We are literally stardust looking back at stellar nurseries.",
+        ],
+    },
+    "books": {
+        "img": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Finished Neuromancer for the first time—wild how much cyberpunk DNA started in 1984.", "The opening line about a dead television channel still hits hard."),
+            ("What cozy, low-stakes sci-fi or fantasy novel feels like a warm cup of tea?", "Becky Chambers' Monk & Robot series is pure comfort."),
+            ("Why secondhand paperbacks with someone else's train ticket inside feel special.", "Every used book carries a quiet little history."),
+            ("Reading 20 pages every morning with coffee instead of checking the news.", "Completely changes the tone of the entire day."),
+            ("What non-fiction book reads like a gripping thriller?", "Endurance by Alfred Lansing and The Devil in the White City."),
+            ("Appreciation for public libraries: audiobooks, quiet desks, and zero algorithms.", "One of the finest inventions in human civilization."),
+            ("Which short story collection can you recommend in a heartbeat?", "Stories of Your Life and Others by Ted Chiang."),
+            ("Building a home bookshelf slowly over ten years instead of buying it all at once.", "A map of everywhere your curiosity has traveled."),
+        ],
+        "replies": [
+            "Ted Chiang's short stories stay with you for years.",
+            "Switching morning news for 20 pages of fiction saved my sanity.",
+            "Found a 1978 boarding pass inside a used Ursula Le Guin paperback once—framed it!",
+            "Public libraries are undefeated.",
+        ],
+    },
+    "food": {
+        "img": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Homemade ramen broth simmered for 10 hours with charred ginger and kombu.", "Worth every minute of patience."),
+            ("A cast-iron skillet, good butter, and sourdough bread: simple comfort perfection.", "Crispy edges and a soft center."),
+            ("What cheap pantry ingredient instantly upgrades almost any savory dish?", "A dash of miso paste or toasted sesame oil."),
+            ("First attempt at baking crusty no-knead Dutch oven bread.", "That crackle sound as it cools on the rack is pure joy."),
+            ("Midnight street tacos from a tiny cart on the corner always beat fine dining.", "Charred onion, fresh cilantro, lime, done."),
+            ("Learning to make proper French-style soft-scrambled eggs changed breakfast forever.", "Low heat, constant stirring, take it off before it looks done."),
+            ("Roasted garlic spread on warm focaccia with flaky sea salt.", "The entire apartment smells incredible."),
+            ("Why cold leftover pizza at 9 AM hits a completely different frequency.", "Unexplained culinary physics."),
+        ],
+        "replies": [
+            "Miso paste in brown butter pasta is an absolute cheat code.",
+            "Hearing fresh bread crackle as it cools is top-tier ASMR.",
+            "Low-and-slow scrambled eggs take five extra minutes and taste 10x better.",
+            "Drop the ramen tare recipe please!",
+        ],
+    },
+    "programming": {
+        "img": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Deleting 800 lines of over-engineered abstraction and replacing it with 40 clean lines.", "Best feeling in software engineering."),
+            ("Why YAML configs are so much nicer to edit by hand than nested JSON.", "Comments, clean indentation, and no trailing-comma headaches."),
+            ("Spent 3 hours debugging a race condition that turned out to be a cached browser tab.", "We've all been there at least once."),
+            ("Writing small single-file tools with zero external dependencies feels refreshing.", "Fast, portable, and readable years later."),
+            ("The magic of keyboard-driven editors and terminal workflows.", "Once muscle memory kicks in, editing flows like thought."),
+            ("Documenting the 'why' instead of the 'what' makes codebases age gracefully.", "Future maintainers will silently thank you."),
+            ("Building small creative audio/visual side projects just for the fun of it.", "Reminds you why you started coding in the first place."),
+            ("Automated tests that run in under 2 seconds make refactoring fearless.", "Instant feedback loop changes everything."),
+        ],
+        "replies": [
+            "Deleting code is always more satisfying than writing it.",
+            "YAML + clean helper functions is unbeatable for readable configs.",
+            "That cached tab bug hits way too close to home.",
+            "Side projects with synths and visuals keep the spark alive!",
+        ],
+    },
+    "EarthPorn": {
+        "img": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Alpine granite peaks glowing amber at alpenglow in the Dolomites.", "Zero filters, just crisp mountain air at 2,800m."),
+            ("Misty cedar forest after autumn rain in the Pacific Northwest.", "Everything smelled like moss and wet pine."),
+            ("Mirror-still glacial lake reflecting the Milky Way before dawn.", "Silence so complete you could hear your heartbeat."),
+            ("Basalt sea stacks standing against turquoise swells in Iceland.", "Raw volcanic geometry shaped by the North Atlantic."),
+            ("Golden aspens along a winding mountain pass in late October.", "Peak autumn color lasted only four days."),
+            ("Morning mist rising off a quiet fjord in western Norway.", "Waterfalls cascading straight down mossy cliffs."),
+            ("Red sandstone canyons catching the last slant of desert sunlight.", "Warm terracotta shadows stretching for miles."),
+            ("Snow-dusted pines framing a frozen waterfall in Banff.", "Crisp -12°C morning with bluebird skies."),
+        ],
+        "replies": [
+            "The sheer scale of those granite walls is breathtaking.",
+            "Pacific Northwest moss and cedar after rain is heaven on Earth.",
+            "Incredible reflection—looks like a glass mirror.",
+            "Adding this trail to my bucket list immediately.",
+        ],
+    },
+    "DIY": {
+        "img": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Restored a thrifted 1960s desk lamp with braided cloth cord and a brass dimmer.", "Total cost under $25 and built like a tank."),
+            ("Built custom walnut monitor stand and cable tray for my home desk.", "Finished with three coats of tung oil."),
+            ("Repaired a sticky cassette deck mechanism with fresh silicone grease and a new belt.", "Runs quieter than the day it left the factory."),
+            ("Framed old transit maps and vintage concert posters with thrifted oak frames.", "Instant character for a bare hallway."),
+            ("Made a passive acoustic phone speaker dock out of a scrap block of maple.", "Warm midrange resonance without any batteries."),
+            ("Soldered a custom mechanical macro pad with a rotary encoder knob.", "Turning a physical dial for volume beats keyboard shortcuts."),
+            ("Refinished a beaten-up mid-century coffee table found on the curb.", "Sanding through 40 years of varnish revealed gorgeous teak grain."),
+            ("Organized every stray charging cable into labeled canvas pouches.", "No more tangled drawer monsters."),
+        ],
+        "replies": [
+            "Braided cloth cord on vintage brass lamps is an instant upgrade.",
+            "Curbside teak finds are the dream—nothing beats real solid wood.",
+            "A physical rotary knob for volume should be mandatory on every desk.",
+            "Clean cable management is pure peace of mind.",
+        ],
+    },
+    "history": {
+        "img": "https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("The Antikythera mechanism: a 2,000-year-old bronze astronomical analog computer.", "Precision gearwork centuries ahead of its era."),
+            ("How pneumatic tube networks once delivered mail across entire cities at 30 mph.", "Paris had nearly 300 miles of underground brass tubes."),
+            ("Letters from 19th-century lighthouse keepers reveal quiet, disciplined daily routines.", "Pages filled with weather logs, books read, and passing ships."),
+            ("Before standardized time zones, every town set its clock by local solar noon.", "Railroads forced the world to synchronize clocks."),
+            ("The 1970s Xerox PARC engineers who invented the GUI, Ethernet, and laser printing.", "One small lab shaped fifty years of computing."),
+            ("Ancient Roman concrete self-heals cracks using reactive lime clasts.", "Harbor piers have survived 2,000 years of saltwater waves."),
+            ("How medieval scribes created vibrant blue pigments from lapis lazuli.", "More expensive than gold leaf at the time."),
+            ("Early mechanical synthesizers like the Telharmonium weighed 200 tons.", "It streamed live music over telephone lines in 1906."),
+        ],
+        "replies": [
+            "Paris's pneumatic mail tubes feel straight out of steampunk fiction.",
+            "Xerox PARC in the 70s had an absurd concentration of genius.",
+            "200-ton synthesizer streaming over phone lines in 1906 is wild!",
+            "Roman marine concrete outlasting modern rebar concrete is humbling.",
+        ],
+    },
+    "Art": {
+        "img": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Gouache study of rain-soaked neon storefronts at dusk.", "Opaque matte pigment makes the highlights pop."),
+            ("Ink and watercolor sketchbooks filled during daily train commutes.", "20 minutes a day adds up to hundreds of scenes."),
+            ("Why limited 4-color palettes create stronger mood than using every color.", "Constraint forces harmony."),
+            ("Linocut printmaking: carving textures by hand and pulling the first proof.", "The tactile press reveal never gets old."),
+            ("Pixel art landscapes inspired by 1990s PC adventure games.", "Dithering skies with just 16 colors."),
+            ("Charcoal figure studies focusing on dramatic chiaroscuro lighting.", "Finding form through shadow alone."),
+            ("Risograph printing: fluorescent pink and cyan ink layers slightly off-register.", "Beautiful analog imperfection."),
+            ("Architectural isometric drawings of cozy retro-futuristic apartments.", "Tiny details in every corner."),
+        ],
+        "replies": [
+            "Risograph pink + cyan layering is pure visual candy.",
+            "A 4-color palette forces every hue to work together—love the discipline.",
+            "Daily train sketchbook routines produce the most honest observational art.",
+            "Matte gouache under warm light has such a velvety texture.",
+        ],
+    },
+    "photography": {
+        "img": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Shooting a single 50mm prime lens for a whole year teaches you to frame with your feet.", "You start seeing focal lengths before raising the camera."),
+            ("Why overcast days give the softest, most flattering natural light.", "The sky turns into a giant diffused softbox."),
+            ("Rediscovering an old CCD digital point-and-shoot from 2005.", "Warm color science and nostalgic flash look."),
+            ("Night street photography after rain using a fast f/1.8 lens.", "Puddles double every neon reflection."),
+            ("Printing your favorite 10 photos of the year instead of leaving them on a drive.", "Physical prints hit differently on a wall."),
+            ("How black-and-white contrast strips away distraction and reveals pure geometry.", "Light, shadow, and line."),
+            ("Developing C-41 color film at home in a kitchen sink.", "Surprisingly approachable once you nail temperature control."),
+            ("Long-exposure coastal waves turning turbulent surf into smooth mist.", "30 seconds with a 10-stop ND filter."),
+        ],
+        "replies": [
+            "A 50mm prime for a full year is the best photography bootcamp.",
+            "Printing photos is essential—screens flatten everything.",
+            "Old 2000s CCD sensors really do have a distinct filmic warmth.",
+            "Overcast softbox light is undefeated for portraits.",
+        ],
+    },
+    "gadgets": {
+        "img": "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Pocket-sized Field Notes + brass pen: still the fastest note-taking device ever made.", "Zero boot time, infinite battery."),
+            ("Compact retro handhelds have perfected pick-up-and-play emulation.", "20 minutes of GBA on a lunch break feels effortless."),
+            ("Why physical mute switches and dedicated volume wheels feel so premium.", "Instant hardware certainty without menus."),
+            ("Solar-powered Casio G-Shock watches that run 20 years without a battery swap.", "Peak functional reliability."),
+            ("Portable USB-C DACs turning any pair of wired IEMs into a studio rig.", "Massive clarity upgrade for $30."),
+            ("E-reader with warm amber frontlight for late-night reading without eye strain.", "Holds thousands of books on a two-month charge."),
+            ("Mechanical kitchen timers that tick softly and ring with a real brass bell.", "No phone distractions while cooking."),
+            ("Compact GaN chargers shrunk laptop power bricks to the size of an ice cube.", "One tiny brick powers everything in a backpack."),
+        ],
+        "replies": [
+            "Solar Casio + pocket notebook + wired IEMs is an unbeatable EDC.",
+            "A real brass bell kitchen timer is so much nicer than a phone alarm.",
+            "Dedicated hardware mute switches should be on every device.",
+            "GaN chargers saved half the space in my travel bag.",
+        ],
+    },
+    "television": {
+        "img": "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?auto=format&fit=crop&w=800&q=80",
+        "topics": [
+            ("Miss the era of 22-episode seasons with cozy filler episodes where characters just hang out.", "World-building breathes when not every minute is plot-critical."),
+            ("What TV show has the best title sequence you never skip?", "Severance, Cowboy Bebop, and True Detective Season 1."),
+            ("Miniseries that tell a complete, tight story in 8 episodes and actually end.", "Resolution beats dragging a show for seven seasons."),
+            ("Late-night animation blocks shaped an entire generation's taste in electronic music.", "Those bumps between shows were pure art."),
+            ("What sitcom still holds up effortlessly twenty years later?", "30 Rock and Parks and Recreation have jokes every five seconds."),
+            ("Sci-fi shows that focus on atmosphere and mystery over endless CGI battles.", "Station Eleven and Dark reward patient viewers."),
+            ("The soundtracks of 90s detective dramas were sneaky jazz showcases.", "Saxophone over rainy cityscapes."),
+            ("Watching one episode a week with friends instead of binging in a weekend.", "Anticipation and weekly theories make shows twice as fun."),
+        ],
+        "replies": [
+            "Cowboy Bebop's opening is mandatory viewing every single episode.",
+            "Adult Swim bumps introduced me to half my favorite ambient and hip-hop artists.",
+            "Weekly episode discussions are so much better than weekend binges.",
+            "Filler episodes are where you actually fall in love with the cast.",
+        ],
+    },
+    "philosophy": {
+        "img": None,
+        "topics": [
+            ("Marcus Aurelius's Meditations was never meant to be published—it was his private journal.", "Reading someone's honest self-reminders feels remarkably modern."),
+            ("Why boredom is essential for creativity and original thought.", "Constant stimulation leaves zero room for your mind to wander."),
+            ("Alan Watts on music: you don't dance to reach the end of the song.", "The point of the melody is the playing itself."),
+            ("The difference between solitude and loneliness: one restores, the other drains.", "Learning to enjoy your own company is a quiet superpower."),
+            ("Diogenes carrying a lantern in broad daylight remains peak philosophical performance art.", "Minimalism taken to its absolute extreme."),
+            ("Why slow craftsmanship brings meaning in an age of instant convenience.", "Effort and care leave a trace you can feel."),
+            ("Stoicism isn't suppressing emotion—it's separating what you control from what you don't.", "Actionable clarity under pressure."),
+            ("How architecture and room lighting subtly shape how we think and feel.", "Warm, quiet spaces invite deeper reflection."),
+        ],
+        "replies": [
+            "Alan Watts's music analogy completely reframed how I think about daily routines.",
+            "Protecting 20 minutes of pure boredom a day is where all my best ideas come from.",
+            "Meditations hitting so hard 1,800 years later proves human nature hasn't changed.",
+            "Solitude by choice is deeply restorative.",
+        ],
+    },
+}
+
+
+def _build_popular_posts():
+    """Deterministically generate 190+ varied posts with scored comments across common Reddit communities."""
+    rng = random.Random(2026)
+    handles = [
+        "midnight_owl", "pixel_drifter", "coffee_and_vinyl", "quiet_signal", "retro_orbit",
+        "neon_rain", "wanderlust_99", "analog_spark", "city_lights", "sunday_reader",
+        "tape_loop", "starlight_bus", "velvet_echo", "moss_garden", "terminal_fox",
+        "amber_lamp", "vinyl_crate", "cobalt_sky", "paper_boat", "copper_wire",
+    ]
+    times = ["18m ago", "42m ago", "1h ago", "2h ago", "3h ago", "5h ago", "7h ago", "9h ago", "12h ago"]
+    suffixes = [
+        "",
+        " (Evening Thread)",
+        " — curious what everyone thinks",
+        " [Discussion]",
+        " — sharing my setup",
+        " (2026 Edition)",
+        " — anyone else notice this?",
+        " [Weekend Notes]",
+    ]
+    extra = []
+    sub_names = list(_COMMON_SUB_BANK.keys())
+    # Generate 200 additional posts (8 base topics * 25 subreddits = 200 unique posts!)
+    for idx in range(200):
+        sub = sub_names[idx % len(sub_names)]
+        bank = _COMMON_SUB_BANK[sub]
+        topic_idx = (idx // len(sub_names)) % len(bank["topics"])
+        base_title, base_body = bank["topics"][topic_idx]
+        cycle = idx // (len(sub_names) * len(bank["topics"]))
+        title = base_title if cycle == 0 else f"{base_title}{suffixes[(idx + cycle) % len(suffixes)]}"
+        author = handles[(idx * 3 + rng.randint(0, 7)) % len(handles)]
+        post_score = rng.randint(180, 18500)
+
+        num_c = rng.randint(3, 5)
+        comments = []
+        used_replies = rng.sample(bank["replies"], k=min(num_c, len(bank["replies"])))
+        base_top = rng.randint(140, 1450)
+        for c_i, r_text in enumerate(used_replies):
+            if c_i == 0:
+                c_score = base_top
+            elif c_i == num_c - 1 and rng.random() < 0.15:
+                c_score = rng.randint(-4, 6)
+            else:
+                c_score = max(3, int(base_top / (c_i + 1.4)) + rng.randint(-15, 25))
+            comments.append({
+                "author": handles[(idx + c_i * 5 + 2) % len(handles)],
+                "score": c_score,
+                "time": times[(c_i * 2 + rng.randint(0, 2)) % len(times)],
+                "body": r_text,
+            })
+
+        extra.append({
+            "subreddit": sub,
+            "title": title,
+            "author": author,
+            "score": post_score,
+            "num_comments": len(comments),
+            "selftext": base_body,
+            "image": bank["img"] if (bank["img"] and idx % 3 != 2) else None,
+            "comments": comments,
+        })
+    return extra
+
+
+SAMPLE.extend(_build_popular_posts())
+
+_LATIN_WORDS = [
+    "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit",
+    "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore",
+    "magna", "aliqua", "enim", "ad", "minim", "veniam", "quis", "nostrud",
+    "exercitation", "ullamco", "laboris", "nisi", "aliquip", "ex", "ea", "commodo",
+    "consequat", "duis", "aute", "irure", "reprehenderit", "voluptate", "velit",
+    "esse", "cillum", "fugiat", "nulla", "pariatur", "excepteur", "sint", "occaecat",
+    "cupidatat", "non", "proident", "sunt", "culpa", "qui", "officia", "deserunt",
+    "mollit", "anim", "id", "est", "laborum", "nox", "silentium", "umbra", "lux",
+    "sonus", "vita", "tempus", "ratio", "forma", "spatium", "locus", "carmen",
+]
+
+_LOREM_SUBS = [
+    "LoremIpsum", "AskReddit", "philosophy", "Showerthoughts",
+    "todayilearned", "music", "Art", "analog", "ambientmusic",
+]
+
+
+def _latin_sentence(rng, min_words=6, max_words=13):
+    words = [rng.choice(_LATIN_WORDS) for _ in range(rng.randint(min_words, max_words))]
+    words[0] = words[0].capitalize()
+    return " ".join(words) + "."
+
+
+def generate_lorem_posts(count=3, start_idx=0):
+    """Dynamically generate Lorem Ipsum / Latin posts with scored comments when scrolling beyond the feed."""
+    rng = random.Random(2026 + start_idx)
+    times = ["just now", "4m ago", "19m ago", "1h ago", "2h ago"]
+    generated = []
+    for offset in range(count):
+        idx = start_idx + offset
+        sub = _LOREM_SUBS[idx % len(_LOREM_SUBS)]
+        title = _latin_sentence(rng, 6, 12).rstrip(".")
+        body = f"{_latin_sentence(rng, 8, 15)} {_latin_sentence(rng, 5, 11)}"
+        author = f"{rng.choice(_LATIN_WORDS)}_{rng.choice(_LATIN_WORDS)}"
+        num_c = rng.randint(3, 5)
+        comments = []
+        top_score = rng.randint(45, 890)
+        for c_i in range(num_c):
+            c_score = top_score if c_i == 0 else max(-3, int(top_score / (c_i + 1.5)) + rng.randint(-12, 18))
+            comments.append({
+                "author": f"{rng.choice(_LATIN_WORDS)}_{rng.randint(10, 99)}",
+                "score": c_score,
+                "time": times[c_i % len(times)],
+                "body": _latin_sentence(rng, 7, 16),
+            })
+        generated.append({
+            "subreddit": sub,
+            "title": title,
+            "author": author,
+            "score": rng.randint(12, 2400),
+            "num_comments": len(comments),
+            "selftext": body,
+            "image": None,
+            "comments": comments,
+        })
+    return generated
 
 def _image(d):
     try:
