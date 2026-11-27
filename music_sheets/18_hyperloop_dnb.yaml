@@ -1,0 +1,291 @@
+id: hyperloop_dnb
+title: Hyperloop DnB
+artist: Sub-Bass 160
+mood: breakbeat
+subreddits:
+- jungle
+- futurebeats
+- chiptunes
+- funny
+bpm: 160
+meter: 4/4
+swing: 0.02
+cutoff: 2450
+arp_mode: down
+drums:
+  kicks:
+  - 0
+  - 2
+  - 10
+  snares:
+  - 4
+  - 7
+  - 9
+  - 12
+  - 15
+  hats:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+bars:
+- name: F#m11
+  bass: F#1
+  pad:
+  - F#3
+  - A3
+  - C#4
+  - E4
+  - B4
+  keys:
+  - C#5
+  - E5
+  - F#5
+  - A5
+  - B5
+  melody:
+  - F#5
+  - null
+  - null
+  - E5
+  - null
+  - C#5
+  - null
+  - B4
+  - null
+  - A4
+  - null
+  - F#4
+  - null
+  - A4
+  - C#5
+  - null
+- name: Dmaj9
+  bass: D2
+  pad:
+  - D3
+  - F#3
+  - A3
+  - C#4
+  - E4
+  keys:
+  - A4
+  - C#5
+  - D5
+  - E5
+  - F#5
+  melody:
+  - D5
+  - null
+  - null
+  - C#5
+  - null
+  - A4
+  - null
+  - F#4
+  - null
+  - E4
+  - null
+  - D4
+  - null
+  - F#4
+  - A4
+  - null
+- name: Bm9
+  bass: B1
+  pad:
+  - B2
+  - D3
+  - F#3
+  - A3
+  - C#4
+  keys:
+  - F#4
+  - A4
+  - B4
+  - C#5
+  - D5
+  melody:
+  - B4
+  - null
+  - null
+  - A4
+  - null
+  - F#4
+  - null
+  - E4
+  - null
+  - D4
+  - null
+  - B3
+  - null
+  - D4
+  - F#4
+  - null
+- name: C#m7
+  bass: C#2
+  pad:
+  - C#3
+  - E3
+  - G#3
+  - B3
+  - F#4
+  keys:
+  - G#4
+  - B4
+  - C#5
+  - E5
+  - G#5
+  melody:
+  - C#5
+  - null
+  - B4
+  - null
+  - G#4
+  - null
+  - E4
+  - null
+  - F#4
+  - null
+  - G#4
+  - B4
+  - null
+  - C#5
+  - E5
+  - null
+- name: Bm9 (B1)
+  bass: B1
+  pad:
+  - B3
+  - D3
+  - F#3
+  - A3
+  - C#4
+  keys:
+  - D5
+  - C#5
+  - B4
+  - A4
+  - F#4
+  melody:
+  - null
+  - F#4
+  - D4
+  - null
+  - B4
+  - null
+  - D4
+  - null
+  - E5
+  - null
+  - F#4
+  - null
+  - A5
+  - null
+  - null
+  - B4
+- name: Dmaj9 (B2)
+  bass: D3
+  pad:
+  - D3
+  - F#3
+  - A3
+  - C#4
+  - E3
+  keys:
+  - A5
+  - C#5
+  - D6
+  - E5
+  - F#6
+  melody:
+  - D5
+  - null
+  - null
+  - C#5
+  - Eb5
+  - A4
+  - E4
+  - F#4
+  - Ab4
+  - E4
+  - B3
+  - D4
+  - E4
+  - F#4
+  - A4
+  - null
+- name: F#m11 (B3)
+  bass: B1
+  pad:
+  - F#3
+  - D4
+  - F#4
+  - E4
+  - B4
+  keys:
+  - F#4
+  - A4
+  - B4
+  - C#5
+  - D5
+  melody:
+  - F#5
+  - null
+  - null
+  - E5
+  - null
+  - C#5
+  - null
+  - B4
+  - null
+  - A4
+  - null
+  - Ab4
+  - null
+  - B4
+  - Eb5
+  - null
+- name: C#m7 (Turnaround)
+  bass: C#2
+  pad:
+  - C#3
+  - E4
+  - G#3
+  - B3
+  - F#4
+  keys:
+  - G#4
+  - B4
+  - C#5
+  - E5
+  - Ab6
+  melody:
+  - C#5
+  - null
+  - B4
+  - null
+  - G#4
+  - null
+  - E4
+  - null
+  - F#4
+  - null
+  - G#4
+  - B4
+  - null
+  - C#5
+  - C#5
+  - null

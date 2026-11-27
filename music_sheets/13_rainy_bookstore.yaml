@@ -1,0 +1,245 @@
+id: rainy_bookstore
+title: Rainy Bookstore
+artist: Dewey Decimal
+mood: calm
+subreddits:
+- books
+- philosophy
+- slowliving
+- AskReddit
+bpm: 70
+meter: 3/4
+swing: 0.05
+cutoff: 740
+arp_mode: random
+drums:
+  kicks:
+  - 0
+  - 6
+  snares:
+  - 4
+  - 8
+  hats:
+  - 0
+  - 2
+  - 4
+  - 6
+  - 8
+  - 10
+bars:
+- name: Gmaj7
+  bass: G1
+  pad:
+  - G2
+  - B2
+  - D3
+  - F#3
+  - A3
+  keys:
+  - D4
+  - F#4
+  - G4
+  - A4
+  - B4
+  melody:
+  - B4
+  - null
+  - A4
+  - G4
+  - null
+  - F#4
+  - D4
+  - null
+  - G4
+  - A4
+  - null
+  - B4
+- name: Em9
+  bass: E1
+  pad:
+  - E2
+  - G2
+  - B2
+  - D3
+  - F#3
+  keys:
+  - B3
+  - D4
+  - E4
+  - F#4
+  - G4
+  melody:
+  - G4
+  - null
+  - F#4
+  - E4
+  - null
+  - D4
+  - B3
+  - null
+  - E4
+  - F#4
+  - null
+  - G4
+- name: Cmaj9
+  bass: C2
+  pad:
+  - C3
+  - E3
+  - G3
+  - B3
+  - D4
+  keys:
+  - G4
+  - B4
+  - C5
+  - D5
+  - E5
+  melody:
+  - E5
+  - null
+  - D5
+  - C5
+  - null
+  - B4
+  - G4
+  - null
+  - C5
+  - D5
+  - null
+  - E5
+- name: D13sus4
+  bass: D2
+  pad:
+  - D3
+  - G3
+  - A3
+  - C4
+  - B4
+  keys:
+  - A4
+  - C5
+  - D5
+  - G5
+  - A5
+  melody:
+  - D5
+  - null
+  - C5
+  - B4
+  - null
+  - A4
+  - G4
+  - null
+  - A4
+  - B4
+  - null
+  - F#4
+- name: Cmaj9 (B1)
+  bass: C2
+  pad:
+  - C4
+  - E3
+  - G3
+  - B3
+  - D4
+  keys:
+  - E5
+  - D5
+  - C5
+  - B4
+  - G4
+  melody:
+  - E6
+  - null
+  - D5
+  - C5
+  - null
+  - G4
+  - B4
+  - null
+  - C6
+  - D5
+  - null
+  - E5
+- name: Em9 (B2)
+  bass: E2
+  pad:
+  - E2
+  - G2
+  - B2
+  - D3
+  - F#2
+  keys:
+  - B4
+  - D4
+  - E5
+  - F#4
+  - G5
+  melody:
+  - G4
+  - null
+  - F#4
+  - E4
+  - F#4
+  - D4
+  - B3
+  - null
+  - E4
+  - F#4
+  - C#4
+  - G4
+- name: Gmaj7 (B3)
+  bass: C2
+  pad:
+  - G2
+  - E3
+  - G3
+  - F#3
+  - A3
+  keys:
+  - G4
+  - B4
+  - C5
+  - D5
+  - E5
+  melody:
+  - B4
+  - null
+  - A4
+  - G4
+  - null
+  - F#4
+  - D4
+  - null
+  - A4
+  - A4
+  - null
+  - C#5
+- name: D13sus4 (Turnaround)
+  bass: D2
+  pad:
+  - D3
+  - G4
+  - A3
+  - C4
+  - B4
+  keys:
+  - A4
+  - C5
+  - D5
+  - G5
+  - A6
+  melody:
+  - D5
+  - null
+  - C5
+  - B4
+  - null
+  - A4
+  - G4
+  - null
+  - A4
+  - B4
+  - D4
+  - null

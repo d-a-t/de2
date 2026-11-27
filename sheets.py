@@ -40,6 +40,7 @@ FALLBACK_SHEET = {
 _DEFAULTS = {
     "artist": "Custom Sheet",
     "mood": "custom",
+    "views": [],
     "subreddits": [],
     "bpm": 96,
     "meter": "4/4",

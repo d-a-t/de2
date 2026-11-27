@@ -2,40 +2,279 @@ id: sanctuary_dusk
 title: Sanctuary Dusk
 artist: Formicapunk Synth
 mood: ambient
+views:
+- FEED
 subreddits:
-  - ambientmusic
-  - slowliving
-  - slowweb
-  - fieldrecording
-  - audiophile
-  - typography
+- ambientmusic
+- slowliving
+- slowweb
+- fieldrecording
+- audiophile
+- typography
 bpm: 72
-meter: "4/4"
+meter: 4/4
 swing: 0.05
 cutoff: 680
 arp_mode: up
 drums:
-  kicks: [0, 10]
-  snares: [4, 12]
-  hats: [0, 4, 8, 12, 14]
+  kicks:
+  - 0
+  - 10
+  snares:
+  - 4
+  - 12
+  hats:
+  - 0
+  - 4
+  - 8
+  - 12
+  - 14
 bars:
-  - name: Amaj9
-    bass: A1
-    pad: [A3, "C#4", E4, "G#4", B4]
-    keys: [E4, "G#4", B4, "C#5", E5]
-    melody: [E5, null, "C#5", null, B4, null, "G#4", null, A4, null, B4, null, "C#5", null, E5, null]
-  - name: F#m9
-    bass: "F#1"
-    pad: ["F#3", A3, "C#4", E4, "G#4"]
-    keys: ["C#4", E4, "G#4", A4, "C#5"]
-    melody: ["C#5", null, A4, null, "G#4", null, E4, null, "F#4", null, "G#4", null, A4, null, E4, null]
-  - name: Dmaj9
-    bass: D2
-    pad: [D3, "F#3", A3, "C#4", E4]
-    keys: [A4, "C#5", E5, "F#5", A5]
-    melody: ["F#5", null, E5, null, "C#5", null, A4, null, D5, null, "C#5", null, A4, null, "F#4", null]
-  - name: E13sus4
-    bass: E1
-    pad: [E3, A3, B3, D4, "C#5"]
-    keys: [B4, D5, E5, A5, B5]
-    melody: [E5, null, D5, null, B4, null, A4, null, "G#4", null, A4, null, B4, null, "C#5", null]
+- name: Amaj9
+  bass: A1
+  pad:
+  - A3
+  - C#4
+  - E4
+  - G#4
+  - B4
+  keys:
+  - E4
+  - G#4
+  - B4
+  - C#5
+  - E5
+  melody:
+  - E5
+  - null
+  - C#5
+  - null
+  - B4
+  - null
+  - G#4
+  - null
+  - A4
+  - null
+  - B4
+  - null
+  - C#5
+  - null
+  - E5
+  - null
+- name: F#m9
+  bass: F#1
+  pad:
+  - F#3
+  - A3
+  - C#4
+  - E4
+  - G#4
+  keys:
+  - C#4
+  - E4
+  - G#4
+  - A4
+  - C#5
+  melody:
+  - C#5
+  - null
+  - A4
+  - null
+  - G#4
+  - null
+  - E4
+  - null
+  - F#4
+  - null
+  - G#4
+  - null
+  - A4
+  - null
+  - E4
+  - null
+- name: Dmaj9
+  bass: D2
+  pad:
+  - D3
+  - F#3
+  - A3
+  - C#4
+  - E4
+  keys:
+  - A4
+  - C#5
+  - E5
+  - F#5
+  - A5
+  melody:
+  - F#5
+  - null
+  - E5
+  - null
+  - C#5
+  - null
+  - A4
+  - null
+  - D5
+  - null
+  - C#5
+  - null
+  - A4
+  - null
+  - F#4
+  - null
+- name: E13sus4
+  bass: E1
+  pad:
+  - E3
+  - A3
+  - B3
+  - D4
+  - C#5
+  keys:
+  - B4
+  - D5
+  - E5
+  - A5
+  - B5
+  melody:
+  - E5
+  - null
+  - D5
+  - null
+  - B4
+  - null
+  - A4
+  - null
+  - G#4
+  - null
+  - A4
+  - null
+  - B4
+  - null
+  - C#5
+  - null
+- name: Dmaj9 (B1)
+  bass: D2
+  pad:
+  - D4
+  - F#3
+  - A3
+  - C#4
+  - E4
+  keys:
+  - A5
+  - F#5
+  - E5
+  - C#5
+  - A4
+  melody:
+  - null
+  - F#4
+  - null
+  - A4
+  - null
+  - C#5
+  - null
+  - D5
+  - null
+  - A4
+  - null
+  - C#5
+  - null
+  - E5
+  - null
+  - F#5
+- name: F#m9 (B2)
+  bass: F#2
+  pad:
+  - F#3
+  - A3
+  - C#4
+  - E4
+  - Ab3
+  keys:
+  - C#5
+  - E4
+  - Ab5
+  - A4
+  - C#6
+  melody:
+  - C#5
+  - null
+  - A4
+  - null
+  - G#4
+  - null
+  - E4
+  - null
+  - F#4
+  - null
+  - G#4
+  - null
+  - A4
+  - null
+  - E4
+  - null
+- name: Amaj9 (B3)
+  bass: D2
+  pad:
+  - A3
+  - F#4
+  - A4
+  - G#4
+  - B4
+  keys:
+  - A4
+  - C#5
+  - E5
+  - F#5
+  - A5
+  melody:
+  - E5
+  - null
+  - C#5
+  - null
+  - B4
+  - null
+  - G#4
+  - null
+  - B4
+  - null
+  - C#5
+  - null
+  - C#5
+  - null
+  - F#5
+  - null
+- name: E13sus4 (Turnaround)
+  bass: E1
+  pad:
+  - E3
+  - A4
+  - B3
+  - D4
+  - C#5
+  keys:
+  - B4
+  - D5
+  - E5
+  - A5
+  - B6
+  melody:
+  - E5
+  - null
+  - D5
+  - null
+  - B4
+  - null
+  - A4
+  - null
+  - G#4
+  - null
+  - A4
+  - null
+  - B4
+  - null
+  - E4
+  - null

@@ -1,0 +1,278 @@
+id: sanctuary_credits
+title: Sanctuary Roll
+artist: Dusqk & Formicapunk
+mood: uplifting
+views:
+- CREDITS
+subreddits: []
+bpm: 88
+meter: 4/4
+swing: 0.04
+cutoff: 1320
+arp_mode: up
+drums:
+  kicks:
+  - 0
+  - 6
+  - 10
+  snares:
+  - 4
+  - 12
+  hats:
+  - 0
+  - 2
+  - 4
+  - 6
+  - 8
+  - 10
+  - 12
+  - 14
+bars:
+- name: Cmaj9
+  bass: C2
+  pad:
+  - C3
+  - E3
+  - G3
+  - B3
+  - D4
+  keys:
+  - G4
+  - B4
+  - C5
+  - D5
+  - E5
+  melody:
+  - E5
+  - null
+  - D5
+  - C5
+  - null
+  - G4
+  - B4
+  - null
+  - C5
+  - null
+  - D5
+  - E5
+  - null
+  - G5
+  - E5
+  - null
+- name: Am9
+  bass: A1
+  pad:
+  - A2
+  - C3
+  - E3
+  - G3
+  - B3
+  keys:
+  - E4
+  - G4
+  - A4
+  - B4
+  - C5
+  melody:
+  - C5
+  - null
+  - B4
+  - A4
+  - null
+  - E4
+  - G4
+  - null
+  - A4
+  - null
+  - B4
+  - C5
+  - null
+  - E5
+  - C5
+  - null
+- name: Fmaj9
+  bass: F1
+  pad:
+  - F2
+  - A2
+  - C3
+  - E3
+  - G3
+  keys:
+  - C4
+  - E4
+  - F4
+  - G4
+  - A4
+  melody:
+  - A4
+  - null
+  - G4
+  - F4
+  - null
+  - C4
+  - E4
+  - null
+  - F4
+  - null
+  - G4
+  - A4
+  - null
+  - C5
+  - A4
+  - null
+- name: G13
+  bass: G1
+  pad:
+  - G2
+  - B2
+  - F3
+  - A3
+  - E4
+  keys:
+  - D4
+  - F4
+  - G4
+  - A4
+  - B4
+  melody:
+  - B4
+  - null
+  - A4
+  - G4
+  - null
+  - D4
+  - F4
+  - null
+  - G4
+  - null
+  - A4
+  - B4
+  - null
+  - D5
+  - B4
+  - null
+- name: Fmaj9 (B1)
+  bass: F1
+  pad:
+  - F3
+  - A2
+  - C3
+  - E3
+  - G3
+  keys:
+  - A4
+  - G4
+  - F4
+  - E4
+  - C4
+  melody:
+  - null
+  - A4
+  - C5
+  - null
+  - A5
+  - G4
+  - null
+  - F4
+  - null
+  - E4
+  - C4
+  - null
+  - F5
+  - G4
+  - null
+  - A4
+- name: Am9 (B2)
+  bass: A2
+  pad:
+  - A2
+  - C3
+  - E3
+  - G3
+  - B2
+  keys:
+  - E5
+  - G4
+  - A5
+  - B4
+  - C6
+  melody:
+  - C5
+  - null
+  - B4
+  - A4
+  - B4
+  - E4
+  - G4
+  - null
+  - A4
+  - null
+  - B4
+  - C5
+  - D5
+  - E5
+  - C5
+  - null
+- name: Cmaj9 (B3)
+  bass: F2
+  pad:
+  - C3
+  - A3
+  - C4
+  - B3
+  - D4
+  keys:
+  - C4
+  - E4
+  - F4
+  - G4
+  - A4
+  melody:
+  - E5
+  - null
+  - D5
+  - C5
+  - null
+  - G4
+  - B4
+  - null
+  - D5
+  - null
+  - E5
+  - F#5
+  - null
+  - A5
+  - F#5
+  - null
+- name: G13 (Turnaround)
+  bass: G1
+  pad:
+  - G2
+  - B3
+  - F3
+  - A3
+  - E4
+  keys:
+  - D4
+  - F4
+  - G4
+  - A4
+  - B5
+  melody:
+  - B4
+  - null
+  - A4
+  - G4
+  - null
+  - D4
+  - F4
+  - null
+  - G4
+  - null
+  - A4
+  - B4
+  - null
+  - D5
+  - G4
+  - null

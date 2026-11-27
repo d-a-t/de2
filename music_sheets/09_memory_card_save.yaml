@@ -1,0 +1,243 @@
+id: memory_card_save
+title: Memory Card Archive
+artist: 15-Block Bios
+mood: nostalgic
+views:
+- MEM. CARD
+subreddits: []
+bpm: 78
+meter: 3/4
+swing: 0.03
+cutoff: 980
+arp_mode: down
+drums:
+  kicks:
+  - 0
+  - 6
+  snares:
+  - 4
+  - 8
+  hats:
+  - 0
+  - 2
+  - 4
+  - 6
+  - 8
+  - 10
+bars:
+- name: Ebmaj9
+  bass: Eb2
+  pad:
+  - Eb3
+  - G3
+  - Bb3
+  - D4
+  - F4
+  keys:
+  - Bb4
+  - D5
+  - Eb5
+  - F5
+  - G5
+  melody:
+  - G5
+  - null
+  - F5
+  - D5
+  - null
+  - Bb4
+  - Eb5
+  - null
+  - F5
+  - G5
+  - null
+  - D5
+- name: Cm9
+  bass: C2
+  pad:
+  - C3
+  - Eb3
+  - G3
+  - Bb3
+  - D4
+  keys:
+  - G4
+  - Bb4
+  - C5
+  - D5
+  - Eb5
+  melody:
+  - Eb5
+  - null
+  - D5
+  - Bb4
+  - null
+  - G4
+  - C5
+  - null
+  - D5
+  - Eb5
+  - null
+  - Bb4
+- name: Abmaj7
+  bass: Ab1
+  pad:
+  - Ab2
+  - C3
+  - Eb3
+  - G3
+  - Bb3
+  keys:
+  - Eb4
+  - G4
+  - Ab4
+  - Bb4
+  - C5
+  melody:
+  - C5
+  - null
+  - Bb4
+  - G4
+  - null
+  - Eb4
+  - Ab4
+  - null
+  - Bb4
+  - C5
+  - null
+  - G4
+- name: Bb13sus4
+  bass: Bb1
+  pad:
+  - Bb2
+  - Eb3
+  - F3
+  - Ab3
+  - G4
+  keys:
+  - F4
+  - Ab4
+  - Bb4
+  - Eb5
+  - G5
+  melody:
+  - F5
+  - null
+  - Eb5
+  - D5
+  - null
+  - Bb4
+  - C5
+  - null
+  - D5
+  - Eb5
+  - null
+  - F5
+- name: Abmaj7 (B1)
+  bass: Ab1
+  pad:
+  - Ab3
+  - C3
+  - Eb3
+  - G3
+  - Bb3
+  keys:
+  - C5
+  - Bb4
+  - Ab4
+  - G4
+  - Eb4
+  melody:
+  - G5
+  - null
+  - C5
+  - Bb4
+  - null
+  - Ab4
+  - Eb4
+  - null
+  - G5
+  - Bb4
+  - null
+  - C5
+- name: Cm9 (B2)
+  bass: C3
+  pad:
+  - C3
+  - Eb3
+  - G3
+  - Bb3
+  - D3
+  keys:
+  - G5
+  - Bb4
+  - C6
+  - D5
+  - Eb6
+  melody:
+  - Eb5
+  - null
+  - D5
+  - Bb4
+  - C5
+  - G4
+  - C5
+  - null
+  - D5
+  - Eb5
+  - Bb4
+  - Bb4
+- name: Ebmaj9 (B3)
+  bass: Ab2
+  pad:
+  - Eb3
+  - C4
+  - Eb4
+  - D4
+  - F4
+  keys:
+  - Eb4
+  - G4
+  - Ab4
+  - Bb4
+  - C5
+  melody:
+  - G5
+  - null
+  - F5
+  - D5
+  - null
+  - Bb4
+  - Eb5
+  - null
+  - G5
+  - G5
+  - null
+  - E5
+- name: Bb13sus4 (Turnaround)
+  bass: Bb1
+  pad:
+  - Bb2
+  - Eb4
+  - F3
+  - Ab3
+  - G4
+  keys:
+  - F4
+  - Ab4
+  - Bb4
+  - Eb5
+  - G6
+  melody:
+  - F5
+  - null
+  - Eb5
+  - D5
+  - null
+  - Bb4
+  - C5
+  - null
+  - D5
+  - Eb5
+  - Bb4
+  - null

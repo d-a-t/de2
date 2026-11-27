@@ -1,0 +1,290 @@
+id: analog_overdrive
+title: Analog Overdrive
+artist: Flyback Coil
+mood: cyber
+subreddits:
+- cyberdeck
+- glitch_art
+- synthesizers
+- science
+bpm: 138
+meter: 4/4
+swing: 0.03
+cutoff: 2250
+arp_mode: pingpong
+drums:
+  kicks:
+  - 0
+  - 3
+  - 6
+  - 10
+  - 12
+  snares:
+  - 4
+  - 12
+  hats:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+bars:
+- name: Gm9
+  bass: G1
+  pad:
+  - G2
+  - Bb2
+  - D3
+  - F3
+  - A3
+  keys:
+  - D4
+  - F4
+  - G4
+  - A4
+  - Bb4
+  melody:
+  - G5
+  - null
+  - F5
+  - D5
+  - Bb4
+  - null
+  - G4
+  - A4
+  - Bb4
+  - null
+  - D5
+  - F5
+  - G5
+  - null
+  - A5
+  - null
+- name: Ebmaj7
+  bass: Eb2
+  pad:
+  - Eb3
+  - G3
+  - Bb3
+  - D4
+  - F4
+  keys:
+  - Bb3
+  - D4
+  - Eb4
+  - F4
+  - G4
+  melody:
+  - Eb5
+  - null
+  - D5
+  - Bb4
+  - G4
+  - null
+  - Eb4
+  - F4
+  - G4
+  - null
+  - Bb4
+  - D5
+  - Eb5
+  - null
+  - F5
+  - null
+- name: Cm9
+  bass: C2
+  pad:
+  - C3
+  - Eb3
+  - G3
+  - Bb3
+  - D4
+  keys:
+  - G4
+  - Bb4
+  - C5
+  - D5
+  - Eb5
+  melody:
+  - C5
+  - null
+  - Bb4
+  - G4
+  - Eb4
+  - null
+  - C4
+  - D4
+  - Eb4
+  - null
+  - G4
+  - Bb4
+  - C5
+  - null
+  - D5
+  - null
+- name: D7alt
+  bass: D2
+  pad:
+  - D3
+  - F#3
+  - C4
+  - Eb4
+  - A4
+  keys:
+  - A4
+  - C5
+  - Eb5
+  - F#5
+  - A5
+  melody:
+  - F#5
+  - Eb5
+  - D5
+  - null
+  - C5
+  - Bb4
+  - A4
+  - null
+  - G4
+  - F#4
+  - A4
+  - null
+  - C5
+  - Eb5
+  - D5
+  - null
+- name: Cm9 (B1)
+  bass: C2
+  pad:
+  - C4
+  - Eb3
+  - G3
+  - Bb3
+  - D4
+  keys:
+  - Eb5
+  - D5
+  - C5
+  - Bb4
+  - G4
+  melody:
+  - null
+  - D5
+  - null
+  - C5
+  - Bb5
+  - G4
+  - null
+  - Eb4
+  - D5
+  - C4
+  - null
+  - Eb4
+  - G5
+  - Bb4
+  - null
+  - C5
+- name: Ebmaj7 (B2)
+  bass: Eb3
+  pad:
+  - Eb3
+  - G3
+  - Bb3
+  - D4
+  - F3
+  keys:
+  - Bb4
+  - D4
+  - Eb5
+  - F4
+  - G5
+  melody:
+  - Eb5
+  - null
+  - D5
+  - Bb4
+  - G4
+  - null
+  - Eb4
+  - F4
+  - G4
+  - null
+  - Bb4
+  - D5
+  - Eb5
+  - null
+  - F5
+  - null
+- name: Gm9 (B3)
+  bass: C2
+  pad:
+  - G2
+  - Eb3
+  - G3
+  - F3
+  - A3
+  keys:
+  - G4
+  - Bb4
+  - C5
+  - D5
+  - Eb5
+  melody:
+  - G5
+  - null
+  - F5
+  - D5
+  - Bb4
+  - null
+  - G4
+  - A4
+  - C5
+  - null
+  - E5
+  - G5
+  - G5
+  - null
+  - B5
+  - null
+- name: D7alt (Turnaround)
+  bass: D2
+  pad:
+  - D3
+  - F#4
+  - C4
+  - Eb4
+  - A4
+  keys:
+  - A4
+  - C5
+  - Eb5
+  - F#5
+  - A6
+  melody:
+  - F#5
+  - Eb5
+  - D5
+  - null
+  - C5
+  - Bb4
+  - A4
+  - null
+  - G4
+  - F#4
+  - A4
+  - null
+  - C5
+  - Eb5
+  - D4
+  - null

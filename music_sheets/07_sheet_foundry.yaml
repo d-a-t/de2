@@ -1,0 +1,278 @@
+id: sheet_foundry
+title: Sheet Foundry
+artist: Modular Studio
+mood: studio
+views:
+- SHEETS
+subreddits: []
+bpm: 102
+meter: 4/4
+swing: 0.04
+cutoff: 1450
+arp_mode: pingpong
+drums:
+  kicks:
+  - 0
+  - 6
+  - 10
+  snares:
+  - 4
+  - 12
+  hats:
+  - 0
+  - 2
+  - 4
+  - 6
+  - 8
+  - 10
+  - 12
+  - 14
+bars:
+- name: Gmaj9
+  bass: G1
+  pad:
+  - G3
+  - B3
+  - D4
+  - F#4
+  - A4
+  keys:
+  - D4
+  - F#4
+  - A4
+  - B4
+  - D5
+  melody:
+  - D5
+  - null
+  - B4
+  - A4
+  - null
+  - F#4
+  - G4
+  - null
+  - A4
+  - B4
+  - null
+  - D5
+  - null
+  - F#5
+  - D5
+  - null
+- name: F#m11
+  bass: F#1
+  pad:
+  - F#3
+  - A3
+  - C#4
+  - E4
+  - B4
+  keys:
+  - C#4
+  - E4
+  - F#4
+  - A4
+  - B4
+  melody:
+  - C#5
+  - null
+  - B4
+  - A4
+  - null
+  - E4
+  - F#4
+  - null
+  - A4
+  - null
+  - B4
+  - C#5
+  - null
+  - E5
+  - C#5
+  - null
+- name: Em9
+  bass: E1
+  pad:
+  - E3
+  - G3
+  - B3
+  - D4
+  - F#4
+  keys:
+  - B3
+  - D4
+  - E4
+  - F#4
+  - G4
+  melody:
+  - B4
+  - null
+  - G4
+  - F#4
+  - null
+  - D4
+  - E4
+  - null
+  - G4
+  - A4
+  - null
+  - B4
+  - null
+  - D5
+  - B4
+  - null
+- name: Dmaj9
+  bass: D2
+  pad:
+  - D3
+  - F#3
+  - A3
+  - C#4
+  - E4
+  keys:
+  - A3
+  - C#4
+  - D4
+  - E4
+  - F#4
+  melody:
+  - A4
+  - null
+  - F#4
+  - E4
+  - null
+  - C#4
+  - D4
+  - null
+  - E4
+  - F#4
+  - null
+  - A4
+  - null
+  - C#5
+  - A4
+  - null
+- name: Em9 (B1)
+  bass: E1
+  pad:
+  - E4
+  - G3
+  - B3
+  - D4
+  - F#4
+  keys:
+  - G4
+  - F#4
+  - E4
+  - D4
+  - B3
+  melody:
+  - null
+  - B4
+  - D5
+  - null
+  - B5
+  - null
+  - A4
+  - G4
+  - null
+  - E4
+  - D4
+  - null
+  - F#5
+  - G4
+  - null
+  - B4
+- name: F#m11 (B2)
+  bass: F#2
+  pad:
+  - F#3
+  - A3
+  - C#4
+  - E4
+  - B3
+  keys:
+  - C#5
+  - E4
+  - F#5
+  - A4
+  - B5
+  melody:
+  - C#5
+  - null
+  - B4
+  - A4
+  - B4
+  - E4
+  - F#4
+  - null
+  - A4
+  - null
+  - B4
+  - C#5
+  - Eb5
+  - E5
+  - C#5
+  - null
+- name: Gmaj9 (B3)
+  bass: C2
+  pad:
+  - G3
+  - E4
+  - G4
+  - F#4
+  - A4
+  keys:
+  - B3
+  - D4
+  - E4
+  - F#4
+  - G4
+  melody:
+  - D5
+  - null
+  - B4
+  - A4
+  - null
+  - F#4
+  - G4
+  - null
+  - B4
+  - B4
+  - null
+  - E5
+  - null
+  - Ab5
+  - E5
+  - null
+- name: Dmaj9 (Turnaround)
+  bass: D2
+  pad:
+  - D3
+  - F#4
+  - A3
+  - C#4
+  - E4
+  keys:
+  - A3
+  - C#4
+  - D4
+  - E4
+  - F#5
+  melody:
+  - A4
+  - null
+  - F#4
+  - E4
+  - null
+  - C#4
+  - D4
+  - null
+  - E4
+  - F#4
+  - null
+  - A4
+  - null
+  - C#5
+  - D4
+  - null

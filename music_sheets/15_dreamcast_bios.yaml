@@ -1,0 +1,245 @@
+id: dreamcast_bios
+title: Dreamcast Swirl
+artist: Memcard 99
+mood: dreamy
+subreddits:
+- VaporwaveAesthetics
+- Frutiger_Aero
+- television
+- Art
+bpm: 94
+meter: 6/8
+swing: 0.03
+cutoff: 1480
+arp_mode: pingpong
+drums:
+  kicks:
+  - 0
+  - 6
+  snares:
+  - 3
+  - 9
+  hats:
+  - 0
+  - 2
+  - 4
+  - 6
+  - 8
+  - 10
+bars:
+- name: Abmaj9
+  bass: Ab1
+  pad:
+  - Ab2
+  - C3
+  - Eb3
+  - G3
+  - Bb3
+  keys:
+  - Eb4
+  - G4
+  - Ab4
+  - Bb4
+  - C5
+  melody:
+  - C5
+  - null
+  - Bb4
+  - Ab4
+  - null
+  - G4
+  - Eb4
+  - null
+  - Ab4
+  - Bb4
+  - null
+  - C5
+- name: Fm9
+  bass: F1
+  pad:
+  - F2
+  - Ab2
+  - C3
+  - Eb3
+  - G3
+  keys:
+  - C4
+  - Eb4
+  - F4
+  - G4
+  - Ab4
+  melody:
+  - Ab4
+  - null
+  - G4
+  - F4
+  - null
+  - Eb4
+  - C4
+  - null
+  - F4
+  - G4
+  - null
+  - Ab4
+- name: Dbmaj7
+  bass: Db2
+  pad:
+  - Db3
+  - F3
+  - Ab3
+  - C4
+  - Eb4
+  keys:
+  - Ab4
+  - C5
+  - Db5
+  - Eb5
+  - F5
+  melody:
+  - F5
+  - null
+  - Eb5
+  - Db5
+  - null
+  - C5
+  - Ab4
+  - null
+  - Db5
+  - Eb5
+  - null
+  - F5
+- name: Eb6
+  bass: Eb2
+  pad:
+  - Eb3
+  - G3
+  - Bb3
+  - C4
+  - F4
+  keys:
+  - Bb4
+  - C5
+  - Eb5
+  - F5
+  - G5
+  melody:
+  - G5
+  - null
+  - F5
+  - Eb5
+  - null
+  - C5
+  - Bb4
+  - null
+  - Eb5
+  - F5
+  - null
+  - G5
+- name: Dbmaj7 (B1)
+  bass: Db2
+  pad:
+  - C#4
+  - F3
+  - Ab3
+  - C4
+  - Eb4
+  keys:
+  - F5
+  - Eb5
+  - Db5
+  - C5
+  - Ab4
+  melody:
+  - F6
+  - null
+  - Eb5
+  - Db5
+  - null
+  - Ab4
+  - C5
+  - null
+  - C#6
+  - Eb5
+  - null
+  - F5
+- name: Fm9 (B2)
+  bass: F2
+  pad:
+  - F2
+  - Ab2
+  - C3
+  - Eb3
+  - G2
+  keys:
+  - C5
+  - Eb4
+  - F5
+  - G4
+  - Ab5
+  melody:
+  - Ab4
+  - null
+  - G4
+  - F4
+  - G4
+  - Eb4
+  - C4
+  - null
+  - F4
+  - G4
+  - D4
+  - Ab4
+- name: Abmaj9 (B3)
+  bass: C#2
+  pad:
+  - Ab2
+  - F3
+  - Ab3
+  - G3
+  - Bb3
+  keys:
+  - Ab4
+  - C5
+  - Db5
+  - Eb5
+  - F5
+  melody:
+  - C5
+  - null
+  - Bb4
+  - Ab4
+  - null
+  - G4
+  - Eb4
+  - null
+  - Bb4
+  - Bb4
+  - null
+  - D5
+- name: Eb6 (Turnaround)
+  bass: Eb2
+  pad:
+  - Eb3
+  - G4
+  - Bb3
+  - C4
+  - F4
+  keys:
+  - Bb4
+  - C5
+  - Eb5
+  - F5
+  - G6
+  melody:
+  - G5
+  - null
+  - F5
+  - Eb5
+  - null
+  - C5
+  - Bb4
+  - null
+  - Eb5
+  - F5
+  - Eb4
+  - null

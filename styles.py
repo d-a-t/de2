@@ -163,6 +163,7 @@ header[data-testid=stHeader] { background: transparent; }
     position: fixed; bottom: 24px; right: 24px; width: 130px;
     background: var(--p1); border: 2px solid var(--yellow); box-shadow: 4px 4px 0 var(--magenta);
     z-index: 100; padding: 6px; text-align: center;
+    transition: bottom .25s ease;
     clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
 }
 .sleepy-cat-corner img { width: 100%; height: auto; display: block; border: 1px solid var(--ln); }

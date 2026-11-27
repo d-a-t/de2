@@ -22,7 +22,7 @@ sheets = load_sheets()
 S = st.session_state
 S.setdefault("block", 1)
 S.setdefault("saved", [])
-S.setdefault("per", 3)
+S.setdefault("per", 30)
 S.setdefault("spooling", False)
 S.setdefault("player_mode", "CASSETTE DECK")
 S.setdefault("force_svg_fallback", False)
@@ -325,7 +325,7 @@ def render_sheets_view():
 
 
 def render_settings_view():
-    S.per = st.select_slider("POSTS PER SIDE", list(range(2, 31)), value=S.per)
+    S.per = st.select_slider("POSTS PER SIDE", list(range(2, 61)), value=S.per)
     st.toggle("PREVIEW SVG FALLBACK ART (OFFLINE)", key="force_svg_fallback")
     st.markdown(
         f'<div class="plain" style="margin-bottom:10px;">'
@@ -370,7 +370,7 @@ with c1:
     elif S.player_mode == "SCROLL SYNTH":
         components.html(scroll_proto_html(live_feed=live, feed_source=SRC or "SAMPLE", svg_count=svg_count, total_posts=len(posts)), height=830, scrolling=False)
     elif S.player_mode == "SONIC DECK":
-        components.html(sonic_deck_html(sheets=sheets), height=830, scrolling=False)
+        components.html(sonic_deck_html(sheets=sheets), height=880, scrolling=False)
     else:
         render_spotify_deck()
 

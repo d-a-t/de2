@@ -291,6 +291,7 @@ button.full {
 (() => {
     const D = __DATA__;
     const $ = id => document.getElementById(id);
+    __VIZ_BRIDGE__
 
     $("feed-src").textContent = D.live ? ("LIVE " + D.source) : "PLACEHOLDER";
     $("svg-stat").textContent = D.svgCount + " / " + D.totalPosts + " CARDS";
@@ -364,6 +365,7 @@ button.full {
         master = ctx.createGain();
         master.gain.value = ($("vol").value / 100) * 0.30;
         master.connect(ctx.destination);
+        ensureParentVisualizer(ctx, master);
 
         padFilter = ctx.createBiquadFilter();
         padFilter.type = "lowpass";
@@ -681,6 +683,9 @@ button.full {
                 nextStepAt += 30 / rawBpm; // eighth-note musical step
             }
         }
+        const leftHud = "⚡ SCROLL SYNTH // " + rawBpm + " BPM · " + currentMeter + " · VEL " + Math.round(rawVelocity) + " px/s";
+        const rightHud = "ΔBPM " + (delta >= 0 ? "+" : "") + delta + " · SHIFTS " + heightShifts;
+        updateParentVisualizer(running, leftHud, rightHud);
     }
 
     $("power").addEventListener("click", async () => {
@@ -807,6 +812,8 @@ button.full {
         window.addEventListener("pagehide", () => {
             pDoc.removeEventListener("pointerdown", onParentPointerDown, { capture: true });
             pDoc.removeEventListener("keydown", onParentKeyDown, { capture: true });
+            updateParentVisualizer(false);
+            if (vizState.raf) window.cancelAnimationFrame(vizState.raf);
             if (ctx && ctx.state !== "closed") ctx.close().catch(() => {});
         });
     } catch (e) {}
@@ -818,10 +825,11 @@ button.full {
 
 
 def scroll_proto_html(live_feed=False, feed_source="SAMPLE", svg_count=0, total_posts=0):
+    from visualizer import VIZ_BRIDGE_JS
     data = json.dumps({
         "live": bool(live_feed),
         "source": feed_source or "SAMPLE",
         "svgCount": int(svg_count),
         "totalPosts": int(total_posts),
     }).replace("</", "<\\/")
-    return TEMPLATE.replace("__DATA__", data)
+    return TEMPLATE.replace("__DATA__", data).replace("__VIZ_BRIDGE__", VIZ_BRIDGE_JS)

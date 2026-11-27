@@ -1,0 +1,243 @@
+id: midnight_notepad
+title: Midnight Notepad
+artist: Ink & Phosphor
+mood: calm
+views:
+- NOTEPAD
+subreddits: []
+bpm: 66
+meter: 6/8
+swing: 0.07
+cutoff: 640
+arp_mode: random
+drums:
+  kicks:
+  - 0
+  - 6
+  snares:
+  - 3
+  - 9
+  hats:
+  - 0
+  - 2
+  - 4
+  - 6
+  - 8
+  - 10
+bars:
+- name: Bbmaj9
+  bass: Bb1
+  pad:
+  - Bb2
+  - D3
+  - F3
+  - A3
+  - C4
+  keys:
+  - F4
+  - A4
+  - Bb4
+  - C5
+  - D5
+  melody:
+  - D5
+  - null
+  - C5
+  - A4
+  - null
+  - F4
+  - null
+  - G4
+  - A4
+  - null
+  - C5
+  - null
+- name: Gm9
+  bass: G1
+  pad:
+  - G2
+  - Bb2
+  - D3
+  - F3
+  - A3
+  keys:
+  - D4
+  - F4
+  - G4
+  - A4
+  - Bb4
+  melody:
+  - Bb4
+  - null
+  - A4
+  - G4
+  - null
+  - D4
+  - null
+  - F4
+  - G4
+  - null
+  - A4
+  - null
+- name: Ebmaj7
+  bass: Eb2
+  pad:
+  - Eb3
+  - G3
+  - Bb3
+  - D4
+  - F4
+  keys:
+  - Bb3
+  - D4
+  - Eb4
+  - F4
+  - G4
+  melody:
+  - G4
+  - null
+  - F4
+  - Eb4
+  - null
+  - Bb3
+  - null
+  - D4
+  - Eb4
+  - null
+  - F4
+  - null
+- name: F6
+  bass: F1
+  pad:
+  - F2
+  - A2
+  - C3
+  - D3
+  - G3
+  keys:
+  - C4
+  - D4
+  - F4
+  - G4
+  - A4
+  melody:
+  - A4
+  - null
+  - G4
+  - F4
+  - null
+  - C4
+  - null
+  - D4
+  - F4
+  - null
+  - G4
+  - null
+- name: Ebmaj7 (B1)
+  bass: Eb2
+  pad:
+  - Eb4
+  - G3
+  - Bb3
+  - D4
+  - F4
+  keys:
+  - G4
+  - F4
+  - Eb4
+  - D4
+  - Bb3
+  melody:
+  - null
+  - F4
+  - null
+  - Eb4
+  - D5
+  - null
+  - Bb3
+  - null
+  - Eb5
+  - F4
+  - null
+  - G4
+- name: Gm9 (B2)
+  bass: G2
+  pad:
+  - G2
+  - Bb2
+  - D3
+  - F3
+  - A2
+  keys:
+  - D5
+  - F4
+  - G5
+  - A4
+  - Bb5
+  melody:
+  - Bb4
+  - null
+  - A4
+  - G4
+  - A4
+  - D4
+  - A3
+  - F4
+  - G4
+  - null
+  - A4
+  - null
+- name: Bbmaj9 (B3)
+  bass: Eb2
+  pad:
+  - Bb2
+  - G3
+  - Bb3
+  - A3
+  - C4
+  keys:
+  - Bb3
+  - D4
+  - Eb4
+  - F4
+  - G4
+  melody:
+  - D5
+  - null
+  - C5
+  - A4
+  - null
+  - F4
+  - null
+  - A4
+  - B4
+  - null
+  - D5
+  - null
+- name: F6 (Turnaround)
+  bass: F1
+  pad:
+  - F2
+  - A3
+  - C3
+  - D3
+  - G3
+  keys:
+  - C4
+  - D4
+  - F4
+  - G4
+  - A5
+  melody:
+  - A4
+  - null
+  - G4
+  - F4
+  - null
+  - C4
+  - null
+  - D4
+  - F4
+  - null
+  - F4
+  - null

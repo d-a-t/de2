@@ -274,6 +274,24 @@ button:focus-visible, input:focus-visible {
     letter-spacing: .04em;
 }
 .status b { color: #ff007f; }
+[data-tip] { position: relative; }
+[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% + 3px);
+    z-index: 30;
+    background: #0b0e14;
+    color: #00f5ff;
+    border: 1px solid #00f5ff;
+    box-shadow: 2px 2px 0 #ff007f;
+    padding: 4px 7px;
+    font: 700 9px/1.35 'Space Mono', monospace;
+    letter-spacing: .03em;
+    pointer-events: none;
+    white-space: normal;
+}
 @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; }
 }
@@ -295,66 +313,88 @@ button:focus-visible, input:focus-visible {
     <div class="meter-head"><span>SMOOTHED CURVE vs TARGET</span><span id="shifts-ignored">SHIFTS FILTERED: 0</span></div>
     <div class="meter-bar"><div class="meter-smooth" id="meter-smooth"></div><div class="meter-target" id="meter-target"></div></div>
   </div>
-  <div class="control">
+  <div class="control" data-tip="Sets the resting base BPM before scroll speed or sheet changes adjust it.">
     <div class="control-head"><label for="manual">BASE TEMPO</label><span><output id="manual-value">76</output> BPM</span></div>
-    <input id="manual" type="range" min="55" max="165" value="76" aria-label="Base tempo in beats per minute">
+    <input id="manual" type="range" min="55" max="165" value="76" title="Sets the resting base BPM before scroll speed or sheet changes adjust it." aria-label="Base tempo in beats per minute">
   </div>
   <div class="control">
     <div class="row">
-      <label class="link"><input id="scroll-link" type="checkbox" checked> LINK SCROLL TO TEMPO</label>
-      <label class="link"><input id="interact-sfx" type="checkbox" checked> UI / FEED SFX</label>
+      <label class="link" title="When enabled, scrolling the feed or comments pushes the target BPM higher."><input id="scroll-link" type="checkbox" checked> LINK SCROLL TO TEMPO</label>
+      <label class="link" title="Plays musical chimes and synth feedback when clicking cards, buttons, or voting on comments."><input id="interact-sfx" type="checkbox" checked> UI / FEED SFX</label>
     </div>
   </div>
-  <div class="control">
-    <div class="control-head"><span class="caption">MUSIC SHEET SAMPLE</span><label class="link" style="font-size:9px"><input id="auto-sample" type="checkbox" checked> AUTO-SAMPLE</label></div>
+  <div class="control" data-tip="Choose a YAML music sheet sample, or enable AUTO-SAMPLE to switch sheets by scroll pace, reading, or page.">
+    <div class="control-head"><span class="caption">MUSIC SHEET SAMPLE</span><label class="link" style="font-size:9px" title="Automatically switches YAML music sheets based on your scroll speed, reading state, active page, or opened post."><input id="auto-sample" type="checkbox" checked> AUTO-SAMPLE</label></div>
     <div class="sheet-row">
-      <select id="sheet-select" class="sheet-select" aria-label="Select music sheet sample"></select>
-      <button id="next-sheet" class="sheet-next" type="button">NEXT &#9656;</button>
+      <select id="sheet-select" class="sheet-select" title="Manually pick any loaded YAML music sheet sample." aria-label="Select music sheet sample"></select>
+      <button id="next-sheet" class="sheet-next" type="button" title="Cycle to the next YAML music sheet in the library.">NEXT &#9656;</button>
     </div>
     <div class="sheet-meta"><span id="sheet-mood">MOOD: AMBIENT</span><span id="sheet-arp">ARP: <b id="arp-lbl">UP</b></span></div>
   </div>
-  <div class="control">
+  <div class="control" data-tip="AUTO adapts the meter to your active page and scroll pace; or click a meter to lock it on the next bar.">
     <div class="control-head"><span class="caption">TIME SIGNATURE</span><span id="meter-mode-lbl" style="color:#ff007f;font-size:9px">AUTO (USAGE)</span></div>
     <div class="sig-row">
-      <button type="button" data-sig="AUTO" aria-pressed="true">AUTO</button>
-      <button type="button" data-sig="4/4" aria-pressed="false">4/4</button>
-      <button type="button" data-sig="3/4" aria-pressed="false">3/4</button>
-      <button type="button" data-sig="6/8" aria-pressed="false">6/8</button>
-      <button type="button" data-sig="5/4" aria-pressed="false">5/4</button>
-      <button type="button" data-sig="7/8" aria-pressed="false">7/8</button>
+      <button type="button" data-sig="AUTO" aria-pressed="true" title="Automatically choose time signature from active page, sheet, and scroll speed.">AUTO</button>
+      <button type="button" data-sig="4/4" aria-pressed="false" title="Lock time signature to 4/4 (16-step groove) on the next bar.">4/4</button>
+      <button type="button" data-sig="3/4" aria-pressed="false" title="Lock time signature to 3/4 waltz feel on the next bar.">3/4</button>
+      <button type="button" data-sig="6/8" aria-pressed="false" title="Lock time signature to 6/8 compound groove on the next bar.">6/8</button>
+      <button type="button" data-sig="5/4" aria-pressed="false" title="Lock time signature to 5/4 asymmetric groove on the next bar.">5/4</button>
+      <button type="button" data-sig="7/8" aria-pressed="false" title="Lock time signature to 7/8 odd-meter pulse on the next bar.">7/8</button>
     </div>
   </div>
   <div class="control">
-    <div class="control-head"><label for="threshold">FAST-SCROLL THRESHOLD</label><span><output id="threshold-value">700</output> px/s</span></div>
-    <input id="threshold" type="range" min="200" max="1600" step="50" value="700" aria-label="Fast scroll threshold in pixels per second">
-    <div class="control-head" style="margin:5px 0 3px"><label for="lift">SCROLL TEMPO LIFT</label><span>+<output id="lift-value">24</output> BPM</span></div>
-    <input id="lift" type="range" min="0" max="40" step="1" value="24" aria-label="Maximum tempo increase from scrolling">
+    <div class="tip-wrap" data-tip="Threshold = scroll speed (px/s) needed for max lift & fast sheets. Higher = slower to trigger.">
+      <div class="control-head"><label for="threshold">FAST-SCROLL THRESHOLD</label><span><output id="threshold-value">380</output> px/s</span></div>
+      <input id="threshold" type="range" min="120" max="1400" step="20" value="380" title="Scroll speed (px/s) needed to hit full tempo lift and trigger fast-scroll sheets." aria-label="Fast scroll threshold in pixels per second">
+    </div>
+    <div class="tip-wrap" style="margin-top:4px" data-tip="Scroll Tempo Lift = maximum extra BPM added to the target tempo when scrolling fast.">
+      <div class="control-head"><label for="lift">SCROLL TEMPO LIFT</label><span>+<output id="lift-value">28</output> BPM</span></div>
+      <input id="lift" type="range" min="0" max="50" step="1" value="28" title="Maximum extra BPM added to the target tempo when scrolling fast." aria-label="Maximum tempo increase from scrolling">
+    </div>
   </div>
   <div class="control">
-    <div class="control-head"><label for="smoothing">TEMPO DAMPING</label><span><output id="smoothing-value">2.5</output> sec</span></div>
-    <input id="smoothing" type="range" min="0.5" max="6" step="0.5" value="2.5" aria-label="Tempo smoothing duration in seconds">
-    <div class="control-head" style="margin:5px 0 3px"><label for="vol">MASTER GAIN</label><span><output id="vol-value">70</output>%</span></div>
-    <input id="vol" type="range" min="0" max="100" step="1" value="70" aria-label="Master volume">
+    <div class="tip-wrap" data-tip="Tempo Damping = how slowly actual BPM glides toward Target BPM (higher = slower changes).">
+      <div class="control-head"><label for="smoothing">TEMPO DAMPING</label><span><output id="smoothing-value">0.6</output> sec</span></div>
+      <input id="smoothing" type="range" min="0.1" max="4.0" step="0.1" value="0.6" title="Controls how slowly the damped tempo catches up to the target BPM." aria-label="Tempo smoothing duration in seconds">
+    </div>
+    <div class="tip-wrap" style="margin-top:4px" data-tip="Master Gain = overall output volume of the Sonic Deck synth and interaction SFX.">
+      <div class="control-head"><label for="vol">MASTER GAIN</label><span><output id="vol-value">70</output>%</span></div>
+      <input id="vol" type="range" min="0" max="100" step="1" value="70" title="Master output volume of the Sonic Deck synthesizer and interaction SFX." aria-label="Master volume">
+    </div>
   </div>
-  <div class="control">
+  <div class="control" data-tip="Controls how Base Tempo smoothly lerps to a new sheet's BPM (duration + easing curve).">
+    <div class="control-head"><label for="base-lerp-dur">BASE TEMPO LERP</label><span><output id="base-lerp-value">1.8</output> sec</span></div>
+    <div class="sheet-row" style="margin-top:2px">
+      <input id="base-lerp-dur" type="range" min="0.2" max="6.0" step="0.2" value="1.8" style="flex:1 1 0;min-width:0" title="Duration (seconds) for Base Tempo to lerp to a new music sheet's BPM." aria-label="Base tempo lerp duration in seconds">
+      <select id="base-lerp-mode" class="sheet-select" style="flex:0 0 auto;width:auto;max-width:105px" title="Interpolation curve used when Base Tempo lerps to a new sheet's BPM." aria-label="Base tempo lerp interpolation method">
+        <option value="smoothstep">SMOOTHSTEP</option>
+        <option value="linear">LINEAR</option>
+        <option value="easeOut">EASE-OUT</option>
+        <option value="easeInOut">EASE-IN-OUT</option>
+        <option value="exponential">EXPONENTIAL</option>
+      </select>
+    </div>
+  </div>
+  <div class="control" data-tip="Toggle individual instrument layers on or off in real time.">
     <div class="caption">SYNTH LAYERS</div>
     <div class="layers">
-      <button type="button" data-layer="pad" aria-pressed="true">&#10022; PAD</button>
-      <button type="button" data-layer="bass" aria-pressed="true">&#9644; BASS</button>
-      <button type="button" data-layer="beat" aria-pressed="true">&#9673; BEAT</button>
-      <button type="button" data-layer="keys" aria-pressed="true">&#9834; KEYS</button>
-      <button type="button" data-layer="melody" aria-pressed="true">&#9835; MELODY</button>
+      <button type="button" data-layer="pad" aria-pressed="true" title="Toggle warm low-pass filtered chord pads with breathing LFO.">&#10022; PAD</button>
+      <button type="button" data-layer="bass" aria-pressed="true" title="Toggle sub-bass root and octave pulse.">&#9644; BASS</button>
+      <button type="button" data-layer="beat" aria-pressed="true" title="Toggle kick, snare, and hi-hat drum pattern from the active sheet.">&#9673; BEAT</button>
+      <button type="button" data-layer="keys" aria-pressed="true" title="Toggle chord arpeggiator (UP, DOWN, PINGPONG, RANDOM).">&#9834; KEYS</button>
+      <button type="button" data-layer="melody" aria-pressed="true" title="Toggle the 16-step lead melody voice from the active YAML sheet.">&#9835; MELODY</button>
     </div>
   </div>
   <div class="buttons">
-    <button id="power" type="button">&#9654; START SESSION</button>
-    <button id="reset" type="button">&#8634; END / RESET</button>
+    <button id="power" type="button" title="Start, pause, or resume the live Sonic Deck synthesizer session.">&#9654; START SESSION</button>
+    <button id="reset" type="button" title="Stop audio, reset the session timer, and clear scroll velocity.">&#8634; END / RESET</button>
   </div>
   <div class="status"><div id="state">READY // BAR-SYNCED METER &amp; DAMPENED TEMPO</div><div id="sensor">FEED + SELECT* LINKED // SHIFT-GUARDED</div></div>
 </div>
 <script>
 (() => {
     const $ = id => document.getElementById(id);
+    __VIZ_BRIDGE__
     const ctxState = { context: null, master: null, layers: {}, padOscs: [], padFilter: null, padLfo: null, running: false };
     const layerOn = { pad: true, bass: true, beat: true, keys: true, melody: true };
 
@@ -378,6 +418,7 @@ button:focus-visible, input:focus-visible {
         title: s.title || "Untitled",
         artist: s.artist || "Custom",
         mood: (s.mood || "ambient").toUpperCase(),
+        views: (s.views || []).map(v => v.toUpperCase()),
         subreddits: (s.subreddits || []).map(x => x.toLowerCase()),
         bpm: Number(s.bpm || 88),
         meter: s.meter || "4/4",
@@ -406,6 +447,9 @@ button:focus-visible, input:focus-visible {
     };
 
     let baseBpm = SHEETS[0].bpm || 76;
+    let baseLerpStart = baseBpm;
+    let baseLerpTarget = baseBpm;
+    let baseLerpStartAt = performance.now();
     let smoothBpm = baseBpm;
     let scrollVelocity = 0;
     let lastScrollAt = 0;
@@ -427,6 +471,69 @@ button:focus-visible, input:focus-visible {
     let shiftsFiltered = 0;
     let interactCount = 0;
     let lastKeyAt = 0;
+    let lastSheetSwitchAt = 0;
+    let readingFocusUntil = 0;
+    let endlessScrollUntil = 0;
+
+    function selectSheetByView(viewName) {
+        if (!$("auto-sample") || !$("auto-sample").checked) return false;
+        const v = (viewName || "").toUpperCase();
+        if (SHEETS[activeSheetIdx] && SHEETS[activeSheetIdx].views.includes(v)) {
+            return false; // Current sheet already fits this page
+        }
+        const matches = SHEETS
+            .map((sh, i) => ({ sh, i }))
+            .filter(x => x.sh.views.includes(v));
+        if (!matches.length) return false;
+        const chosen = matches[Math.floor(Math.random() * matches.length)];
+        if (chosen && chosen.i !== activeSheetIdx) {
+            lastSheetSwitchAt = performance.now();
+            selectSheet(chosen.i, "PAGE: " + v);
+            return true;
+        }
+        return false;
+    }
+
+    function pickRandomSheetInRange(minBpm, maxBpm, preferredMoods) {
+        let candidates = SHEETS
+            .map((sh, i) => ({ sh, i }))
+            .filter(x => x.sh.bpm >= minBpm && x.sh.bpm <= maxBpm);
+        if (!candidates.length) return -1;
+        if (preferredMoods && preferredMoods.length) {
+            const moodMatched = candidates.filter(x => preferredMoods.includes(x.sh.mood));
+            if (moodMatched.length) candidates = moodMatched;
+        }
+        // Stick to the current sheet as long as it already fits the condition
+        if (candidates.some(x => x.i === activeSheetIdx)) {
+            return activeSheetIdx;
+        }
+        return candidates[Math.floor(Math.random() * candidates.length)].i;
+    }
+
+    function evaluateAdaptiveSheet(activeVelocity, threshold) {
+        if (!$("auto-sample") || !$("auto-sample").checked) return;
+        if (activeView !== "FEED" || lastDetectedAtm) return;
+        const now = performance.now();
+        if (now - lastSheetSwitchAt < 850) return;
+
+        let targetIdx = -1;
+        let reason = "";
+        if (activeVelocity >= threshold || now < endlessScrollUntil) {
+            targetIdx = pickRandomSheetInRange(118, 200, ["CYBER", "BREAKBEAT"]);
+            reason = now < endlessScrollUntil ? "ENDLESS SCROLL" : "FAST SCROLL";
+        } else if (now < readingFocusUntil && activeVelocity < 65) {
+            targetIdx = pickRandomSheetInRange(50, 76, ["AMBIENT", "CALM"]);
+            reason = "READING POST";
+        } else if (activeVelocity >= 25 && activeVelocity < threshold * 0.55) {
+            targetIdx = pickRandomSheetInRange(77, 115, ["LOFI", "DREAMY", "EXPERIMENTAL", "NOSTALGIC"]);
+            reason = "SLOW SCROLL";
+        }
+
+        if (targetIdx !== -1 && targetIdx !== activeSheetIdx) {
+            lastSheetSwitchAt = now;
+            selectSheet(targetIdx, reason);
+        }
+    }
 
     function populateSheetSelect() {
         const sel = $("sheet-select");
@@ -441,22 +548,46 @@ button:focus-visible, input:focus-visible {
         sel.value = String(activeSheetIdx);
     }
 
+    function easeLerp(t, mode) {
+        const x = Math.max(0, Math.min(1, t));
+        if (mode === "linear") return x;
+        if (mode === "easeOut") return 1 - Math.pow(1 - x, 2);
+        if (mode === "easeInOut") return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+        if (mode === "exponential") return x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+        return x * x * (3 - 2 * x); // smoothstep
+    }
+
     function selectSheet(idx, reason) {
         if (!SHEETS.length) return;
         activeSheetIdx = ((idx % SHEETS.length) + SHEETS.length) % SHEETS.length;
         const sh = SHEETS[activeSheetIdx];
         PROGRESSION = sh.bars;
-        baseBpm = sh.bpm;
-        $("manual").value = Math.round(baseBpm);
-        $("manual-value").textContent = String(Math.round(baseBpm));
+        if (reason === null) {
+            baseBpm = sh.bpm;
+            baseLerpStart = sh.bpm;
+            baseLerpTarget = sh.bpm;
+            $("manual").value = Math.round(baseBpm);
+            $("manual-value").textContent = String(Math.round(baseBpm));
+        } else {
+            baseLerpStart = baseBpm;
+            baseLerpTarget = sh.bpm;
+            baseLerpStartAt = performance.now();
+        }
         if (sigSetting === "AUTO") {
             pendingMeter = sh.meter || "4/4";
         }
         if ($("sheet-select")) $("sheet-select").value = String(activeSheetIdx);
         if ($("sheet-mood")) $("sheet-mood").textContent = "MOOD: " + sh.mood + " // " + sh.artist.toUpperCase();
         if ($("arp-lbl")) $("arp-lbl").textContent = sh.arpMode.toUpperCase();
-        if (ctxState.padFilter && ctxState.context) {
-            ctxState.padFilter.frequency.setTargetAtTime(sh.cutoff || 950, ctxState.context.currentTime, 0.25);
+        if (ctxState.context) {
+            const nowT = ctxState.context.currentTime;
+            if (ctxState.padFilter) {
+                ctxState.padFilter.frequency.setTargetAtTime(sh.cutoff || 950, nowT, 0.08);
+            }
+            const firstPad = PROGRESSION[barCount % PROGRESSION.length].pad;
+            ctxState.padOscs.forEach((osc, i) => {
+                osc.frequency.setTargetAtTime(firstPad[i % firstPad.length], nowT, 0.06);
+            });
         }
         if (reason) {
             $("state").textContent = "SHEET: " + sh.title.toUpperCase() + " (" + reason + ")";
@@ -487,6 +618,7 @@ button:focus-visible, input:focus-visible {
         compressor.connect(context.destination);
         ctxState.context = context;
         ctxState.master = master;
+        ensureParentVisualizer(context, compressor);
 
         ["pad", "bass", "beat", "keys", "melody"].forEach(name => {
             const gain = context.createGain();
@@ -595,10 +727,6 @@ button:focus-visible, input:focus-visible {
             if (pendingMeter !== activeMeter) {
                 activeMeter = pendingMeter;
                 spec = METERS[activeMeter] || METERS["4/4"];
-            }
-            // Auto-sample evolution: every 8 bars when no comments window is open, evolve to another sheet
-            if ($("auto-sample") && $("auto-sample").checked && barCount > 0 && barCount % 8 === 0 && !lastDetectedAtm && SHEETS.length > 1) {
-                selectSheet((activeSheetIdx + 1) % SHEETS.length, "AUTO-EVOLVE BAR " + barCount);
             }
         }
         const s = stepInBar;
@@ -736,9 +864,10 @@ button:focus-visible, input:focus-visible {
             if (checked) {
                 const lbl = checked.closest("label");
                 const txt = (lbl ? lbl.innerText : "").trim().toUpperCase();
-                if (txt) {
+                if (txt && txt !== activeView) {
                     activeView = txt;
                     $("view-lbl").textContent = activeView;
+                    selectSheetByView(txt);
                 }
             }
         } catch (e) {}
@@ -774,9 +903,9 @@ button:focus-visible, input:focus-visible {
 
             const recordPace = amount => {
                 const now = performance.now();
-                const interval = Math.max(24, now - (lastInputAt || now - 100));
+                const interval = Math.max(20, now - (lastInputAt || now - 80));
                 const instant = Math.min(2400, Math.abs(amount) * 1000 / interval);
-                scrollVelocity = scrollVelocity * 0.62 + instant * 0.38;
+                scrollVelocity = scrollVelocity * 0.35 + instant * 0.65;
                 lastInputAt = now;
                 lastScrollAt = now;
             };
@@ -822,7 +951,19 @@ button:focus-visible, input:focus-visible {
         const threshold = Number($("threshold").value);
         const lift = Number($("lift").value);
         const damping = Number($("smoothing").value);
-        const timeSinceInput = performance.now() - lastScrollAt;
+        const lerpDur = Number($("base-lerp-dur") ? $("base-lerp-dur").value : 1.8);
+        const lerpMode = $("base-lerp-mode") ? $("base-lerp-mode").value : "smoothstep";
+        const now = performance.now();
+
+        if (Math.abs(baseLerpTarget - baseBpm) > 0.05) {
+            const tLerp = Math.min(1, (now - baseLerpStartAt) / Math.max(50, lerpDur * 1000));
+            baseBpm = baseLerpStart + (baseLerpTarget - baseLerpStart) * easeLerp(tLerp, lerpMode);
+            $("manual").value = Math.round(baseBpm);
+        } else {
+            baseBpm = baseLerpTarget;
+        }
+
+        const timeSinceInput = now - lastScrollAt;
         const activeVelocity = timeSinceInput < 2200
             ? scrollVelocity * Math.exp(-Math.max(0, timeSinceInput - 180) / 650)
             : 0;
@@ -830,7 +971,6 @@ button:focus-visible, input:focus-visible {
             ? Math.min(lift, activeVelocity / threshold * lift)
             : 0;
         const target = baseBpm + linkedTempo;
-        const now = performance.now();
         const delta = Math.min(0.2, Math.max(0.001, (now - lastTickAt) / 1000));
         lastTickAt = now;
         const blend = 1 - Math.exp(-delta / damping);
@@ -838,11 +978,16 @@ button:focus-visible, input:focus-visible {
 
         pendingMeter = sigSetting === "AUTO" ? desiredAutoMeter(activeVelocity, threshold) : sigSetting;
         if (!ctxState.running) activeMeter = pendingMeter;
+        evaluateAdaptiveSheet(activeVelocity, threshold);
 
         $("bpm").textContent = String(Math.round(smoothBpm)).padStart(3, "0");
         $("target-bpm").textContent = String(Math.round(target)).padStart(3, "0");
         $("pace").textContent = activeVelocity < 80 ? "IDLE" : activeVelocity >= threshold ? "FAST" : "ACTIVE";
-        $("manual-value").textContent = String(baseBpm);
+        const baseRounded = Math.round(baseBpm);
+        $("manual-value").textContent = baseRounded !== Math.round(baseLerpTarget)
+            ? (baseRounded + "→" + Math.round(baseLerpTarget))
+            : String(baseRounded);
+        if ($("base-lerp-value")) $("base-lerp-value").textContent = lerpDur.toFixed(1);
         $("threshold-value").textContent = String(threshold);
         $("lift-value").textContent = String(lift);
         $("smoothing-value").textContent = damping.toFixed(1);
@@ -869,6 +1014,12 @@ button:focus-visible, input:focus-visible {
         const total = elapsed + (ctxState.running ? (Date.now() - startedAt) : 0);
         const seconds = Math.floor(total / 1000);
         $("timer").textContent = String(Math.floor(seconds / 60)).padStart(2, "0") + ":" + String(seconds % 60).padStart(2, "0");
+
+        const sh = SHEETS[activeSheetIdx];
+        const lpf = Math.round(ctxState.padFilter ? ctxState.padFilter.frequency.value : (sh.cutoff || 820));
+        const leftHud = "⚡ SONIC DECK // " + Math.round(smoothBpm) + " BPM · " + activeMeter + " · " + sh.title.toUpperCase() + " · LPF " + lpf + " Hz";
+        const rightHud = "LIFT +" + Math.round(linkedTempo) + " BPM · " + $("pace").textContent + " · " + $("state").textContent.slice(0, 34);
+        updateParentVisualizer(ctxState.running, leftHud, rightHud);
     }
 
     populateSheetSelect();
@@ -884,7 +1035,13 @@ button:focus-visible, input:focus-visible {
         });
     }
 
-    $("manual").addEventListener("input", event => { baseBpm = Number(event.target.value); });
+    $("manual").addEventListener("input", event => {
+        baseBpm = Number(event.target.value);
+        baseLerpStart = baseBpm;
+        baseLerpTarget = baseBpm;
+    });
+    if ($("base-lerp-dur")) $("base-lerp-dur").addEventListener("input", refreshControls);
+    if ($("base-lerp-mode")) $("base-lerp-mode").addEventListener("change", refreshControls);
     $("threshold").addEventListener("input", refreshControls);
     $("lift").addEventListener("input", refreshControls);
     $("smoothing").addEventListener("input", refreshControls);
@@ -939,6 +1096,8 @@ button:focus-visible, input:focus-visible {
         scrollVelocity = 0;
         lastScrollAt = 0;
         baseBpm = Number($("manual").value);
+        baseLerpStart = baseBpm;
+        baseLerpTarget = baseBpm;
         smoothBpm = baseBpm;
         stepInBar = 0;
         barCount = 0;
@@ -955,9 +1114,13 @@ button:focus-visible, input:focus-visible {
                 if (sub && sub !== lastDetectedAtm) {
                     lastDetectedAtm = sub;
                     if ($("auto-sample") && $("auto-sample").checked) {
-                        const matchIdx = SHEETS.findIndex(sh => sh.subreddits.includes(sub));
-                        if (matchIdx !== -1) {
-                            selectSheet(matchIdx, "SYNC r/" + sub.toUpperCase());
+                        const matches = SHEETS
+                            .map((sh, i) => ({ sh, i }))
+                            .filter(x => x.sh.subreddits.includes(sub));
+                        if (matches.length) {
+                            const pool = matches.length > 1 ? matches.filter(x => x.i !== activeSheetIdx) : matches;
+                            const chosen = pool[Math.floor(Math.random() * pool.length)];
+                            selectSheet(chosen.i, "SYNC r/" + sub.toUpperCase());
                             return;
                         }
                     }
@@ -1031,7 +1194,7 @@ button:focus-visible, input:focus-visible {
         }
         connectSideScrollSensor();
         checkSubredditAtmosphere();
-    }, 450);
+    }, 150);
     setInterval(refreshControls, 25);
 
     try {
@@ -1047,6 +1210,7 @@ button:focus-visible, input:focus-visible {
                 if (txt) {
                     activeView = txt;
                     $("view-lbl").textContent = activeView;
+                    selectSheetByView(txt);
                     playTunedInteraction("select", "SELECT* -> " + txt);
                 }
                 return;
@@ -1061,9 +1225,11 @@ button:focus-visible, input:focus-visible {
                     playTunedInteraction("save", "SAVE TO MEM.");
                 } else if (txt.includes("SAVED")) {
                     playTunedInteraction("unsave", "REMOVED FROM MEM.");
-                } else if (txt.includes("LOAD NEXT SIDE")) {
-                    playTunedInteraction("load", "LOAD NEXT SIDE");
+                } else if (txt.includes("LOAD NEXT SIDE") || txt.includes("GENERATE MORE")) {
+                    endlessScrollUntil = performance.now() + 8000;
+                    playTunedInteraction("load", txt.includes("GENERATE") ? "LOREM TAPE GEN" : "LOAD NEXT SIDE");
                 } else if (txt.includes("COMMENTS WINDOW") || txt.includes("SIDE COMMENTS") || txt.includes("OPEN TO SIDE")) {
+                    readingFocusUntil = performance.now() + 9000;
                     playTunedInteraction("dock", "OPEN COMMENTS WINDOW");
                 } else if (txt.includes("CLOSE DOCK") || txt.includes("CLOSE")) {
                     playTunedInteraction("undock", "CLOSE WINDOW");
@@ -1078,11 +1244,13 @@ button:focus-visible, input:focus-visible {
                 }
                 return;
             }
-            if (target.closest(".side-comment-card, .comment-card")) {
+            if (target.closest(".side-comment-card, .comment-card, .comments-toggle")) {
+                readingFocusUntil = performance.now() + 8000;
                 playTunedInteraction("select", "COMMENT FREQUENCY TOUCH");
                 return;
             }
             if (target.closest(".card")) {
+                readingFocusUntil = performance.now() + 7000;
                 playTunedInteraction("card", "CARD CLICK");
             } else {
                 playTunedInteraction("click", "STAGE INTERACTION");
@@ -1104,6 +1272,8 @@ button:focus-visible, input:focus-visible {
         window.addEventListener("pagehide", () => {
             pDoc.removeEventListener("pointerdown", onParentPointerDown, { capture: true });
             pDoc.removeEventListener("keydown", onParentKeyDown, { capture: true });
+            updateParentVisualizer(false);
+            if (vizState.raf) window.cancelAnimationFrame(vizState.raf);
             if (ctxState.context && ctxState.context.state !== "closed") ctxState.context.close().catch(() => {});
         });
     } catch (e) {}
@@ -1117,6 +1287,7 @@ button:focus-visible, input:focus-visible {
 def sonic_deck_html(sheets=None):
     import json
     from sheets import load_sheets
+    from visualizer import VIZ_BRIDGE_JS
     data = sheets if sheets is not None else load_sheets()
     payload = json.dumps(data).replace("</", "<\\/")
-    return SONIC_DECK_HTML.replace("__SHEETS_DATA__", payload)
+    return SONIC_DECK_HTML.replace("__SHEETS_DATA__", payload).replace("__VIZ_BRIDGE__", VIZ_BRIDGE_JS)

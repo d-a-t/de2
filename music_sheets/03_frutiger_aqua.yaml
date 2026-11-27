@@ -3,37 +3,243 @@ title: Frutiger Aqua Menu
 artist: Glassbutton Archive
 mood: dreamy
 subreddits:
-  - Frutiger_Aero
-  - VaporwaveAesthetics
-  - IndieGaming
-  - CozyPlaces
+- Frutiger_Aero
+- VaporwaveAesthetics
+- IndieGaming
+- CozyPlaces
 bpm: 96
-meter: "6/8"
+meter: 6/8
 swing: 0.02
 cutoff: 1400
 arp_mode: up
 drums:
-  kicks: [0, 6]
-  snares: [3, 9]
-  hats: [0, 2, 4, 6, 8, 10]
+  kicks:
+  - 0
+  - 6
+  snares:
+  - 3
+  - 9
+  hats:
+  - 0
+  - 2
+  - 4
+  - 6
+  - 8
+  - 10
 bars:
-  - name: Fmaj9
-    bass: F2
-    pad: [F3, A3, C4, E4, G4]
-    keys: [C4, E4, G4, A4, C5]
-    melody: [A5, null, G5, E5, null, C5, G4, null, A4, C5, null, E5]
-  - name: Em7
-    bass: E2
-    pad: [E3, G3, B3, D4, G4]
-    keys: [B3, D4, E4, G4, B4]
-    melody: [G5, null, E5, D5, null, B4, D5, null, E5, G5, null, B4]
-  - name: Dm9
-    bass: D2
-    pad: [D3, F3, A3, C4, E4]
-    keys: [A3, C4, E4, F4, A4]
-    melody: [F5, null, E5, C5, null, A4, E4, null, F4, A4, null, C5]
-  - name: Cmaj7
-    bass: C2
-    pad: [C3, E3, G3, B3, D4]
-    keys: [G3, B3, C4, E4, G4]
-    melody: [E5, null, D5, B4, null, G4, C5, null, E5, G5, null, null]
+- name: Fmaj9
+  bass: F2
+  pad:
+  - F3
+  - A3
+  - C4
+  - E4
+  - G4
+  keys:
+  - C4
+  - E4
+  - G4
+  - A4
+  - C5
+  melody:
+  - A5
+  - null
+  - G5
+  - E5
+  - null
+  - C5
+  - G4
+  - null
+  - A4
+  - C5
+  - null
+  - E5
+- name: Em7
+  bass: E2
+  pad:
+  - E3
+  - G3
+  - B3
+  - D4
+  - G4
+  keys:
+  - B3
+  - D4
+  - E4
+  - G4
+  - B4
+  melody:
+  - G5
+  - null
+  - E5
+  - D5
+  - null
+  - B4
+  - D5
+  - null
+  - E5
+  - G5
+  - null
+  - B4
+- name: Dm9
+  bass: D2
+  pad:
+  - D3
+  - F3
+  - A3
+  - C4
+  - E4
+  keys:
+  - A3
+  - C4
+  - E4
+  - F4
+  - A4
+  melody:
+  - F5
+  - null
+  - E5
+  - C5
+  - null
+  - A4
+  - E4
+  - null
+  - F4
+  - A4
+  - null
+  - C5
+- name: Cmaj7
+  bass: C2
+  pad:
+  - C3
+  - E3
+  - G3
+  - B3
+  - D4
+  keys:
+  - G3
+  - B3
+  - C4
+  - E4
+  - G4
+  melody:
+  - E5
+  - null
+  - D5
+  - B4
+  - null
+  - G4
+  - C5
+  - null
+  - E5
+  - G5
+  - null
+  - null
+- name: Dm9 (B1)
+  bass: D2
+  pad:
+  - D4
+  - F3
+  - A3
+  - C4
+  - E4
+  keys:
+  - A4
+  - F4
+  - E4
+  - C4
+  - A3
+  melody:
+  - C6
+  - null
+  - A4
+  - F4
+  - null
+  - E4
+  - A4
+  - null
+  - C6
+  - E5
+  - null
+  - F5
+- name: Em7 (B2)
+  bass: E3
+  pad:
+  - E3
+  - G3
+  - B3
+  - D4
+  - G3
+  keys:
+  - B4
+  - D4
+  - E5
+  - G4
+  - B5
+  melody:
+  - G5
+  - null
+  - E5
+  - D5
+  - E5
+  - B4
+  - D5
+  - null
+  - E5
+  - G5
+  - D5
+  - B4
+- name: Fmaj9 (B3)
+  bass: Bb2
+  pad:
+  - F3
+  - D4
+  - F4
+  - E4
+  - G4
+  keys:
+  - A3
+  - C4
+  - E4
+  - F4
+  - A4
+  melody:
+  - A5
+  - null
+  - G5
+  - E5
+  - null
+  - C5
+  - G4
+  - null
+  - B4
+  - C5
+  - null
+  - F#5
+- name: Cmaj7 (Turnaround)
+  bass: C2
+  pad:
+  - C3
+  - E4
+  - G3
+  - B3
+  - D4
+  keys:
+  - G3
+  - B3
+  - C4
+  - E4
+  - G5
+  melody:
+  - E5
+  - null
+  - D5
+  - B4
+  - null
+  - G4
+  - C5
+  - null
+  - E5
+  - G5
+  - C4
+  - null
