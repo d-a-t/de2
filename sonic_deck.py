@@ -15,9 +15,12 @@ body {
     font: 11px 'Space Mono', 'Courier New', monospace;
 }
 .deck {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
     border: 2px solid #00f5ff;
     background: linear-gradient(145deg, #171d2b, #10131d);
-    padding: 12px;
+    padding: 10px 12px;
     box-shadow: 4px 4px 0 #ff007f;
     clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 26px 100%, 0 calc(100% - 26px));
     position: relative;
@@ -53,19 +56,21 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    gap: 10px;
-    padding: 8px 0 6px;
+    gap: 8px;
+    padding: 5px 0 4px;
 }
 .display strong {
     display: block;
     color: #ffe600;
-    font: 400 36px/.95 Anton, 'Courier New', monospace;
+    font: 400 32px/.95 Anton, 'Courier New', monospace;
     text-shadow: 2px 0 #00f5ff, -2px 0 #ff007f;
+    white-space: nowrap;
 }
 .display small {
     color: #8c95ad;
     font-size: 9px;
     letter-spacing: .12em;
+    white-space: nowrap;
 }
 .readout {
     text-align: right;
@@ -106,7 +111,7 @@ body {
 }
 
 .control {
-    padding: 6px 0;
+    padding: 4px 0;
     border-top: 1px solid #2e364f;
 }
 .control-head {
@@ -141,7 +146,7 @@ input[type=range] {
 .buttons {
     display: flex;
     gap: 8px;
-    margin-top: 8px;
+    margin-top: 6px;
 }
 button {
     cursor: pointer;
@@ -207,9 +212,18 @@ button:focus-visible, input:focus-visible {
     gap: 5px;
     align-items: center;
     margin-top: 4px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 .sheet-select {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     background: #0b0e14;
     color: #ffe600;
     border: 1px solid #343d55;
@@ -221,6 +235,8 @@ button:focus-visible, input:focus-visible {
     border-color: #00f5ff;
 }
 .sheet-next {
+    flex: 0 0 auto;
+    white-space: nowrap;
     border: 1px solid #00f5ff;
     color: #00f5ff;
     background: #0b0e14;
@@ -235,9 +251,16 @@ button:focus-visible, input:focus-visible {
 .sheet-meta {
     display: flex;
     justify-content: space-between;
+    gap: 6px;
     font-size: 9px;
     color: #8c95ad;
     margin-top: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.sheet-meta span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .sheet-meta b { color: #00f5ff; }
 .status {

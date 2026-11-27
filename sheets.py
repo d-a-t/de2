@@ -1,10 +1,9 @@
 """Music sheet sample loader for the dynamic Sonic Deck synthesizer.
-Reads .json music sheets from ./music_sheets so users can add new sample musics
-(chords, melodies, basslines, drum patterns, tempo, and mood tags) to make the
-dynamic music richer and more complex."""
-import json
+Reads .yaml/.yml music sheets from ./music_sheets so users can add new sample musics
+(chords, melodies, basslines, drum patterns, tempo, and mood tags) cleanly."""
 import re
 from pathlib import Path
+import yaml
 
 SHEETS_DIR = Path(__file__).parent / "music_sheets"
 
@@ -13,12 +12,13 @@ FALLBACK_SHEET = {
     "title": "Sanctuary Dusk",
     "artist": "Formicapunk Synth",
     "mood": "ambient",
-    "subreddits": ["ambientmusic", "slowliving", "SlowWeb"],
+    "subreddits": ["ambientmusic", "slowliving", "slowweb"],
     "bpm": 74,
     "meter": "4/4",
     "swing": 0.06,
     "cutoff": 820,
     "arp_mode": "up",
+    "drums": {"kicks": [0, 6, 10], "snares": [4, 12], "hats": [0, 2, 4, 6, 8, 10, 12, 14]},
     "bars": [
         {
             "name": "Amaj9",
@@ -35,50 +35,53 @@ FALLBACK_SHEET = {
             "melody": ["C#5", None, "A4", None, "G#4", "E4", None, "C#4", None, "F#4", "G#4", None, "A4", None, "E4", None],
         },
     ],
-    "drums": {
-        "kicks": [0, 6, 10],
-        "snares": [4, 12],
-        "hats": [0, 2, 4, 6, 8, 10, 12, 14],
-    },
+}
+
+_DEFAULTS = {
+    "artist": "Custom Sheet",
+    "mood": "custom",
+    "subreddits": [],
+    "bpm": 96,
+    "meter": "4/4",
+    "swing": 0.04,
+    "cutoff": 950,
+    "arp_mode": "up",
 }
 
 
 def load_sheets():
-    """Load all valid .json music sheets from ./music_sheets, sorted by filename."""
+    """Load all valid .yaml/.yml music sheets from ./music_sheets, sorted by filename."""
     SHEETS_DIR.mkdir(parents=True, exist_ok=True)
+    paths = sorted(list(SHEETS_DIR.glob("*.yaml")) + list(SHEETS_DIR.glob("*.yml")))
     sheets = []
-    for path in sorted(SHEETS_DIR.glob("*.json")):
+    for path in paths:
         try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-            if isinstance(data, dict) and data.get("bars"):
-                data.setdefault("id", path.stem)
-                data.setdefault("title", path.stem.replace("_", " ").title())
-                data.setdefault("artist", "Custom Sheet")
-                data.setdefault("mood", "custom")
-                data.setdefault("subreddits", [])
-                data.setdefault("bpm", 96)
-                data.setdefault("meter", "4/4")
-                data.setdefault("swing", 0.04)
-                data.setdefault("cutoff", 950)
-                data.setdefault("arp_mode", "up")
-                data["_file"] = path.name
-                sheets.append(data)
+            data = yaml.safe_load(path.read_text(encoding="utf-8"))
         except Exception:
             continue
+        if not isinstance(data, dict) or not data.get("bars"):
+            continue
+        data.setdefault("id", path.stem)
+        data.setdefault("title", path.stem.replace("_", " ").title())
+        for key, val in _DEFAULTS.items():
+            data.setdefault(key, list(val) if isinstance(val, list) else val)
+        data["_file"] = path.name
+        sheets.append(data)
     return sheets or [FALLBACK_SHEET]
 
 
 def save_sheet(sheet_data):
-    """Save a new music sheet dictionary to ./music_sheets/<slug>.json and return its Path."""
+    """Save a music sheet dictionary as YAML to ./music_sheets/<slug>.yaml."""
     SHEETS_DIR.mkdir(parents=True, exist_ok=True)
     raw_id = sheet_data.get("id") or sheet_data.get("title") or "custom_sheet"
     slug = re.sub(r"[^a-z0-9_]+", "_", raw_id.lower()).strip("_") or "custom_sheet"
     sheet_data["id"] = slug
-    existing = list(SHEETS_DIR.glob("*.json"))
-    prefix = f"{len(existing) + 1:02d}_"
-    target = SHEETS_DIR / f"{prefix}{slug}.json"
-    if (SHEETS_DIR / f"{slug}.json").exists():
-        target = SHEETS_DIR / f"{slug}.json"
+    direct = SHEETS_DIR / f"{slug}.yaml"
+    if direct.exists():
+        target = direct
+    else:
+        existing = list(SHEETS_DIR.glob("*.yaml")) + list(SHEETS_DIR.glob("*.yml"))
+        target = SHEETS_DIR / f"{len(existing) + 1:02d}_{slug}.yaml"
     clean = {k: v for k, v in sheet_data.items() if not k.startswith("_")}
-    target.write_text(json.dumps(clean, indent=2), encoding="utf-8")
+    target.write_text(yaml.safe_dump(clean, sort_keys=False, allow_unicode=True), encoding="utf-8")
     return target
