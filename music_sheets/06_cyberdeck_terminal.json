@@ -1,0 +1,47 @@
+{
+  "id": "cyberdeck_terminal",
+  "title": "Terminal Oddity",
+  "artist": "NetBSD Amber",
+  "mood": "experimental",
+  "subreddits": ["retrobattlestations", "mechanicalkeyboards", "solarpunk", "industrialdesign", "mildlyinteresting"],
+  "bpm": 108,
+  "meter": "7/8",
+  "swing": 0.02,
+  "cutoff": 1350,
+  "arp_mode": "pingpong",
+  "bars": [
+    {
+      "name": "Dm9",
+      "bass": "D2",
+      "pad": ["D3", "F3", "A3", "C4", "E4"],
+      "keys": ["A4", "C5", "D5", "E5", "F5"],
+      "melody": ["D5", null, "F5", "A5", "E5", null, "C5", "D5", null, "A4", "C5", null, "E5", "F5"]
+    },
+    {
+      "name": "Bbmaj7",
+      "bass": "Bb1",
+      "pad": ["Bb2", "D3", "F3", "A3", "C4"],
+      "keys": ["F4", "A4", "Bb4", "C5", "D5"],
+      "melody": ["Bb4", null, "D5", "F5", "C5", null, "A4", "Bb4", null, "F4", "A4", null, "C5", "D5"]
+    },
+    {
+      "name": "Gm9",
+      "bass": "G1",
+      "pad": ["G2", "Bb2", "D3", "F3", "A3"],
+      "keys": ["D4", "F4", "G4", "A4", "Bb4"],
+      "melody": ["G5", null, "F5", "D5", "C5", null, "Bb4", "A4", null, "G4", "Bb4", null, "D5", "F5"]
+    },
+    {
+      "name": "A7sus4",
+      "bass": "A1",
+      "pad": ["A2", "D3", "E3", "G3", "C#4"],
+      "keys": ["E4", "G4", "A4", "D5", "E5"],
+      "melody": ["A5", null, "G5", "E5", "D5", null, "C#5", "A4", null, "E4", "G4", null, "A4", "D5"]
+    }
+  ],
+  "drums": {
+    "kicks": [0, 4, 8, 11],
+    "snares": [6, 12],
+    "hats": [0, 2, 4, 6, 8, 10, 12]
+  }
+}

@@ -753,7 +753,7 @@ button.full {
                 return;
             }
 
-            const inFeed = target.closest(".st-key-feedscroll, .st-key-stage");
+            const inFeed = target.closest(".st-key-feedscroll, .st-key-sidescroll, .st-key-stage, [data-testid='stDialog'], [role='dialog']");
             if (!inFeed) return;
 
             const btn = target.closest("button");
@@ -765,9 +765,23 @@ button.full {
                     handleFeedInteraction("unsave", "BTN: UNSAVE MEM.", 640);
                 } else if (txt.includes("LOAD NEXT SIDE")) {
                     handleFeedInteraction("load", "BTN: LOAD NEXT SIDE", 1100);
+                } else if (txt.includes("COMMENTS WINDOW") || txt.includes("SIDE COMMENTS") || txt.includes("OPEN TO SIDE")) {
+                    handleFeedInteraction("dock", "BTN: COMMENTS WINDOW", 940);
+                } else if (txt.includes("CLOSE DOCK") || txt.includes("CLOSE")) {
+                    handleFeedInteraction("undock", "BTN: UNDOCK COMMENTS", 520);
+                } else if (txt.includes("▲") || txt.includes("+1") || txt.includes("UPVOTE")) {
+                    handleFeedInteraction("upvote", "BTN: COMMENT ▲ +1", 860);
+                } else if (txt.includes("▼") || txt.includes("-1") || txt.includes("DOWNVOTE")) {
+                    handleFeedInteraction("downvote", "BTN: COMMENT ▼ -1", 420);
+                } else if (txt.includes("BROADCAST") || txt.includes("TRANSMIT")) {
+                    handleFeedInteraction("transmit", "BTN: SIGNAL BROADCAST", 1300);
                 } else {
                     handleFeedInteraction("btn", "BTN: " + (txt.slice(0, 14) || "ACTION"), 680);
                 }
+                return;
+            }
+            if (target.closest(".side-comment-card, .comment-card")) {
+                handleFeedInteraction("comment", "COMMENT TOUCH", 480);
                 return;
             }
             if (target.closest(".card")) {

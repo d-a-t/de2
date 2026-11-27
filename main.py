@@ -1,9 +1,11 @@
 import time
+import json
 import html
 import streamlit as st
 import streamlit.components.v1 as components
 from data import get_posts, art
 from music import load_library, MUSIC_DIR, clear_cover_cache
+from sheets import load_sheets, save_sheet, SHEETS_DIR
 from spotify import has_keys
 from local_player import player_html
 from scroll_proto_player import scroll_proto_html
@@ -15,8 +17,8 @@ st.set_page_config(
     layout="wide"
 )
 
-posts, live = get_posts()
 tracks = load_library()
+sheets = load_sheets()
 S = st.session_state
 S.setdefault("block", 1)
 S.setdefault("saved", [])
@@ -24,6 +26,15 @@ S.setdefault("per", 3)
 S.setdefault("spooling", False)
 S.setdefault("player_mode", "CASSETTE DECK")
 S.setdefault("force_svg_fallback", False)
+S.setdefault("side_post_idx", None)
+
+if "posts" not in S:
+    p_init, live_init = get_posts()
+    S.posts = p_init
+    S.live = live_init
+
+posts = S.posts
+live = S.live
 
 SRC = {"API": "REDDIT API", "RSS": "REDDIT RSS", "JSON": "REDDIT JSON"}.get(posts[0].get("src", ""), "REDDIT") if live else ""
 
@@ -191,6 +202,253 @@ header[data-testid=stHeader] { background: transparent; }
 label, .stSelectSlider label p, [data-testid=stWidgetLabel] p { color: var(--ink)!important; font-family: 'Space Mono'!important; }
 textarea { background: var(--p2)!important; color: var(--ink)!important; font-family: 'Space Mono'!important; }
 
+/* In-Card Comments Section */
+.comments-drawer {
+    margin-top: 10px;
+    border: 1px solid var(--ln);
+    background: var(--p1);
+    transition: all .2s ease;
+}
+.comments-drawer[open] {
+    border-color: var(--cyan);
+    box-shadow: 0 0 10px rgba(0, 245, 255, 0.15);
+}
+.comments-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: var(--p2);
+    cursor: pointer;
+    font: 700 10px 'Space Mono', monospace;
+    letter-spacing: .08em;
+    color: var(--cyan);
+    user-select: none;
+    transition: background .15s, color .15s, border-color .15s;
+    list-style: none;
+    border-left: 3px solid var(--cyan);
+}
+.comments-toggle::-webkit-details-marker { display: none; }
+.comments-toggle:hover {
+    background: #232c42;
+    color: var(--yellow);
+    border-left-color: var(--yellow);
+}
+.comments-drawer[open] .comments-toggle {
+    background: var(--p1);
+    border-bottom: 1px solid var(--ln);
+    border-left-color: var(--yellow);
+    color: var(--yellow);
+}
+.cmt-toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.cmt-toggle-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.cmt-badge {
+    background: rgba(0, 245, 255, 0.12);
+    color: var(--cyan);
+    border: 1px solid rgba(0, 245, 255, 0.4);
+    padding: 2px 6px;
+    font-size: 9px;
+    font-weight: 700;
+}
+.cmt-action {
+    color: var(--dim);
+    font-size: 9px;
+    letter-spacing: .1em;
+}
+.comments-drawer[open] .cmt-action {
+    color: var(--magenta);
+}
+.comments-body {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 360px;
+    overflow-y: auto;
+    background: rgba(11, 14, 20, 0.9);
+}
+.comments-body::-webkit-scrollbar {
+    width: 6px;
+}
+.comments-body::-webkit-scrollbar-thumb {
+    background: var(--cyan);
+}
+.comments-bar {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: var(--dim);
+    letter-spacing: .12em;
+    padding-bottom: 4px;
+    border-bottom: 1px dashed var(--ln);
+}
+.comment-card {
+    background: var(--p1);
+    border: 1px solid #23293d;
+    border-left: 3px solid var(--cyan);
+    padding: 8px 10px;
+    font-family: 'Space Mono', monospace;
+    transition: border-left-color .15s, background .15s;
+}
+.comment-card:hover {
+    border-left-color: var(--yellow);
+    background: #171d2c;
+}
+.comment-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.comment-user {
+    color: var(--yellow);
+    font-weight: 700;
+    font-size: 10px;
+}
+.comment-pts {
+    font-weight: 700;
+    padding: 1px 6px;
+    font-size: 9px;
+    display: inline-block;
+}
+.comment-pts.pos {
+    background: rgba(0, 245, 255, 0.12);
+    color: var(--cyan);
+    border: 1px solid rgba(0, 245, 255, 0.3);
+}
+.comment-pts.high {
+    background: rgba(255, 230, 0, 0.15);
+    color: var(--yellow);
+    border: 1px solid var(--yellow);
+}
+.comment-pts.neg {
+    background: rgba(255, 0, 127, 0.15);
+    color: var(--magenta);
+    border: 1px solid var(--magenta);
+}
+.comment-time {
+    color: var(--dim);
+    font-size: 9px;
+    margin-left: 4px;
+}
+.comment-msg {
+    font-size: 11px;
+    line-height: 1.5;
+    color: #cbd2e1;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.comments-footer {
+    text-align: center;
+    font-size: 8px;
+    color: var(--dim);
+    letter-spacing: .15em;
+    padding: 4px 0 2px;
+}
+
+/* Side Comments Dock */
+.side-post-header {
+    background: var(--p2);
+    border: 1px solid var(--ln);
+    border-left: 4px solid var(--yellow);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+}
+.side-post-header h4 {
+    font: 400 18px/1.2 Anton, sans-serif;
+    color: #fff;
+    text-transform: uppercase;
+    margin: 4px 0 6px;
+    letter-spacing: .02em;
+}
+.side-genre-badge {
+    display: inline-block;
+    background: rgba(0, 245, 255, 0.12);
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    font: 700 9px 'Space Mono', monospace;
+    letter-spacing: .12em;
+    padding: 2px 7px;
+    margin-top: 4px;
+}
+.side-comment-card {
+    background: var(--p1);
+    border: 1px solid #283046;
+    border-left: 3px solid var(--cyan);
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    font-family: 'Space Mono', monospace;
+    transition: all .15s ease;
+}
+.side-comment-card:hover {
+    border-left-color: var(--yellow);
+    background: #171d2c;
+}
+.side-comment-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.side-comment-user {
+    color: var(--yellow);
+    font-weight: 700;
+}
+.side-comment-score {
+    font-weight: 700;
+    padding: 1px 6px;
+    font-size: 9px;
+    display: inline-block;
+}
+.side-comment-score.pos {
+    background: rgba(0, 245, 255, 0.12);
+    color: var(--cyan);
+    border: 1px solid rgba(0, 245, 255, 0.3);
+}
+.side-comment-score.high {
+    background: rgba(255, 230, 0, 0.15);
+    color: var(--yellow);
+    border: 1px solid var(--yellow);
+}
+.side-comment-score.neg {
+    background: rgba(255, 0, 127, 0.15);
+    color: var(--magenta);
+    border: 1px solid var(--magenta);
+}
+.side-comment-text {
+    font-size: 11px;
+    line-height: 1.5;
+    color: #cbd2e1;
+    margin: 0;
+    word-break: break-word;
+}
+.card.card-docked {
+    border-color: var(--cyan) !important;
+    border-left: 6px solid var(--cyan) !important;
+    box-shadow: 0 0 16px rgba(0, 245, 255, 0.35) !important;
+}
+.card.card-docked .rc {
+    color: var(--cyan) !important;
+    animation: bl .5s steps(2) infinite !important;
+}
+.st-key-sidescroll *::-webkit-scrollbar { width: 6px; }
+.st-key-sidescroll *::-webkit-scrollbar-thumb { background: var(--cyan); }
+
 @media (prefers-reduced-motion: reduce) {
     .card, .reel, .rc, .tape-line, .full-cassette, .stApp::after { animation: none !important; }
 }
@@ -216,11 +474,152 @@ def card(p, i, n):
     tag = "REDDIT IMG" if use_img else "GENERATED ART"
     img = f'<img alt="" referrerpolicy="no-referrer" loading="lazy" src="{e(p["image"])}">' if use_img else ""
     sc = "—" if p.get("score") is None else p["score"]
-    cm = "—" if p.get("num_comments") is None else p["num_comments"]
+    
+    comments = p.get("comments", [])
+    cm = len(comments) if comments else (p.get("num_comments") or 0)
+    top_score = max((c.get("score", 0) for c in comments), default=0) if comments else 0
+    top_badge = f'<span class="cmt-badge">▲ TOP +{top_score}</span>' if comments else ''
+    
+    c_cards = []
+    for c in comments:
+        c_score = c.get("score", 0)
+        c_cls = "high" if c_score >= 400 else ("neg" if c_score < 0 else "pos")
+        c_author = e(c.get("author", "anonymous"))
+        c_time = e(c.get("time", "recent"))
+        c_body = e(c.get("body", ""))
+        c_cards.append(
+            f'<div class="comment-card">'
+            f'  <div class="comment-head">'
+            f'    <span class="comment-user">u/{c_author}</span>'
+            f'    <div>'
+            f'      <span class="comment-pts {c_cls}">▲ {c_score:+d} PTS</span>'
+            f'      <span class="comment-time">· {c_time}</span>'
+            f'    </div>'
+            f'  </div>'
+            f'  <p class="comment-msg">{c_body}</p>'
+            f'</div>'
+        )
+    rendered_comments = "".join(c_cards) if c_cards else '<div class="comment-card"><p class="comment-msg">No transmission chatter on this frequency.</p></div>'
+    
+    comments_drawer = (
+        f'<details class="comments-drawer">'
+        f'  <summary class="comments-toggle">'
+        f'    <div class="cmt-toggle-left">'
+        f'      <span class="cmt-icon">💬</span>'
+        f'      <span class="cmt-title">COMMENTS // TRANSMISSIONS ({cm})</span>'
+        f'    </div>'
+        f'    <div class="cmt-toggle-right">'
+        f'      {top_badge}'
+        f'      <span class="cmt-action">PREVIEW IN-CARD ▾</span>'
+        f'    </div>'
+        f'  </summary>'
+        f'  <div class="comments-body">'
+        f'    <div class="comments-bar"><span>// ARCHIVED SIGNALS ({cm})</span><span>CLICK [COMMENTS WINDOW 💬] FOR FULL INTERACTION</span></div>'
+        f'    {rendered_comments}'
+        f'    <div class="comments-footer">✦ FREQUENCY LOG END // USE [COMMENTS WINDOW] TO VOTE & REPLY</div>'
+        f'  </div>'
+        f'</details>'
+    )
+    
     return (f'<div class="card" style="--i:{n}"><div class="pic"><img alt="" src="{art(p["title"], p["subreddit"])}">{img}'
             f'<span class="tg">IMG {i+1:02d} // {tag}</span><span class="rc">● REC</span></div><div class="bd">'
             f'<div class="l"><span>✦ r/{e(p["subreddit"])}</span><span>TRK {i+1:03d}</span></div><h3>{e(p["title"])}</h3><p>{e(p["selftext"])}</p>'
-            f'<small>u/{e(p["author"])} · ▲ {sc} · 💬 {cm}</small></div></div>')
+            f'<small>u/{e(p["author"])} · ▲ {sc} · 💬 {cm} · CLICK [COMMENTS WINDOW] FOR FULL THREAD ▾</small>'
+            f'{comments_drawer}'
+            f'</div></div>')
+
+@st.dialog("TRANSMISSION TERMINAL // COMMENTS WINDOW")
+def open_comments_window(p, idx):
+    e = html.escape
+    sub = p.get("subreddit", "all")
+    title = p.get("title", "")
+    author = p.get("author", "anonymous")
+    score = p.get("score", 0)
+    comments = p.get("comments", [])
+    
+    sub_lower = sub.lower()
+    if sub_lower in ["ambientmusic", "slowliving", "slowweb", "typography", "fieldrecording", "audiophile"]:
+        atm_type = "AMBIENT CALM"
+        atm_color = "var(--cyan)"
+        atm_desc = "WARM LOW-PASS FILTER // 68 BPM"
+    elif sub_lower in ["jungle", "futurebeats", "chiptunes", "cyberdeck", "glitch_art"]:
+        atm_type = "BREAKBEAT CYBER"
+        atm_color = "var(--magenta)"
+        atm_desc = "SYNCOPATED 16THS // 142 BPM"
+    else:
+        atm_type = "ANALOG TAPE"
+        atm_color = "var(--yellow)"
+        atm_desc = "FLUTTER & CAPSTAN WOW // 88 BPM"
+
+    st.markdown(
+        f'<div class="side-post-header" data-subreddit="{e(sub)}">'
+        f'<div style="display:flex; justify-content:space-between; font-size:10px; color:var(--cyan); margin-bottom:4px;">'
+        f'<span>✦ r/{e(sub)}</span><span>LOG #{idx+1:03d} · ▲ {score} PTS</span>'
+        f'</div>'
+        f'<h4>{e(title)}</h4>'
+        f'<p style="font-size:11px; color:#b9b6d4; line-height:1.5; margin:4px 0 6px;">{e(p.get("selftext", ""))}</p>'
+        f'<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">'
+        f'<span style="font-size:9px; color:var(--dim);">u/{e(author)} · 💬 {len(comments)} SIGNALS</span>'
+        f'<div class="side-genre-badge" style="border-color:{atm_color}; color:{atm_color};">'
+        f'⚡ AUDIO SYNC: {atm_type} [{atm_desc}]'
+        f'</div>'
+        f'</div>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown(f'<div class="cap">TRANSMISSION FREQUENCIES ({len(comments)}) »</div>', unsafe_allow_html=True)
+
+    if not comments:
+        st.markdown('<div class="plain">NO SIGNALS RECORDED ON THIS FREQUENCY YET.</div>', unsafe_allow_html=True)
+    else:
+        for c_i, c in enumerate(comments):
+            c_score = c.get("score", 0)
+            c_cls = "high" if c_score >= 400 else ("neg" if c_score < 0 else "pos")
+            st.markdown(
+                f'<div class="side-comment-card">'
+                f'<div class="side-comment-top">'
+                f'<span class="side-comment-user">u/{e(c.get("author", "anon"))}</span>'
+                f'<div>'
+                f'<span class="side-comment-score {c_cls}">▲ {c_score:+d} PTS</span>'
+                f'<span style="color:var(--dim); font-size:9px; margin-left:4px;">· {e(c.get("time", "recent"))}</span>'
+                f'</div>'
+                f'</div>'
+                f'<p class="side-comment-text">{e(c.get("body", ""))}</p>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+            col_v1, col_v2 = st.columns([1, 1], gap="small")
+            with col_v1:
+                if st.button("▲ UPVOTE (+1)", key=f"win_up_{idx}_{c_i}", help="Upvote transmission"):
+                    c["score"] = c.get("score", 0) + 1
+                    st.rerun()
+            with col_v2:
+                if st.button("▼ DOWNVOTE (-1)", key=f"win_dn_{idx}_{c_i}", help="Downvote transmission"):
+                    c["score"] = c.get("score", 0) - 1
+                    st.rerun()
+
+    st.markdown('<div class="hazard" style="height:6px; margin:14px 0 10px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="cap">BROADCAST SIGNAL TO THREAD »</div>', unsafe_allow_html=True)
+    with st.form(f"win_form_{idx}", clear_on_submit=True):
+        r_body = st.text_area("SIGNAL MESSAGE", placeholder="Transmit your response...", label_visibility="collapsed", height=70)
+        col_author, col_send = st.columns([1.2, 1.0])
+        with col_author:
+            r_author = st.text_input("CALLSIGN", value="guest_operator", label_visibility="collapsed")
+        with col_send:
+            sub_click = st.form_submit_button("BROADCAST ✦", use_container_width=True)
+        if sub_click and r_body.strip():
+            new_entry = {
+                "author": r_author.strip() or "guest_operator",
+                "score": 1,
+                "time": "just now",
+                "body": r_body.strip()
+            }
+            if "comments" not in p:
+                p["comments"] = []
+            p["comments"].append(new_entry)
+            p["num_comments"] = len(p["comments"])
+            st.rerun()
 
 svg_count = sum(1 for p in posts if S.force_svg_fallback or not p.get("image"))
 
@@ -255,7 +654,7 @@ with c1:
             scrolling=False,
         )
     elif S.player_mode == "SONIC DECK":
-        components.html(sonic_deck_html(), height=830, scrolling=False)
+        components.html(sonic_deck_html(sheets=sheets), height=830, scrolling=False)
     else:
             # Styled ZZZ OS Container matching the cassette deck aesthetics
             st.markdown('''
@@ -286,7 +685,7 @@ with c1:
 with c2:
     with st.container(key="menu"):
         st.markdown('<div class="cap">SELECT* »</div>', unsafe_allow_html=True)
-        view = st.radio("Menu", ["FEED", "SETTINGS", "MEM. CARD", "NOTEPAD", "CREDITS"], label_visibility="collapsed")
+        view = st.radio("Menu", ["FEED", "SHEETS", "SETTINGS", "MEM. CARD", "NOTEPAD", "CREDITS"], label_visibility="collapsed")
         st.markdown('<div class="hazard"></div><div class="cap">MODULAR PATTERN ▸</div>', unsafe_allow_html=True)
 
 with c3:
@@ -301,9 +700,15 @@ with c3:
                 for i, p in enumerate(shown):
                     st.markdown(card(p, i, i % per), unsafe_allow_html=True)
                     done = p["title"] in S.saved
-                    if st.button("SAVED ✦" if done else "SAVE TO MEM.", key=f"s{i}"):
-                        S.saved.remove(p["title"]) if done else S.saved.append(p["title"])
-                        st.rerun()
+                    c_save, c_win = st.columns([1, 1], gap="small")
+                    with c_save:
+                        if st.button("SAVED ✦" if done else "SAVE TO MEM.", key=f"s{i}"):
+                            S.saved.remove(p["title"]) if done else S.saved.append(p["title"])
+                            st.rerun()
+                    with c_win:
+                        cm_cnt = len(p.get("comments", []))
+                        if st.button(f"COMMENTS WINDOW 💬 ({cm_cnt})", key=f"w{i}"):
+                            open_comments_window(p, i)
                     if (i + 1) % per == 0: 
                         st.markdown('<div class="gap"></div>', unsafe_allow_html=True)
                 if len(shown) < len(posts):
@@ -321,6 +726,99 @@ with c3:
                         st.rerun()
                 else:
                     st.markdown('<div class="plain" style="text-align:center">END OF TAPE. The timeline stops here on purpose.</div>', unsafe_allow_html=True)
+        elif view == "SHEETS":
+            st.markdown(
+                f'<div class="plain" style="margin-bottom:10px;">'
+                f'MUSIC SHEETS FOLDER: <b style="color:var(--yellow)">{html.escape(str(SHEETS_DIR))}</b> ({len(sheets)} SHEETS LOADED)<br>'
+                f'Drop <code>.json</code> music sheet files into this folder or create one below. The <b>SONIC DECK</b> dynamically samples chords, basslines, melodies, drums, and swing from these sheets.'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+            if st.button("↻ RELOAD SHEETS FROM DISK"):
+                st.rerun()
+            with st.container(height=360, border=False):
+                for idx_s, sh in enumerate(sheets):
+                    chords_str = " → ".join(b.get("name", "?") for b in sh.get("bars", []))
+                    subs_str = ", ".join(f"r/{s}" for s in sh.get("subreddits", [])) or "ALL"
+                    mel_preview = " ".join(n or "·" for n in (sh.get("bars", [{}])[0].get("melody", [])[:12]))
+                    st.markdown(
+                        f'<div class="side-comment-card" style="border-left-color:var(--yellow); margin-bottom:8px;">'
+                        f'<div class="side-comment-top">'
+                        f'<span class="side-comment-user">{idx_s+1:02d}. {html.escape(sh.get("title", "Untitled"))} — {html.escape(sh.get("artist", ""))}</span>'
+                        f'<div>'
+                        f'<span class="side-comment-score high">{sh.get("bpm", 90)} BPM · {html.escape(sh.get("meter", "4/4"))}</span>'
+                        f'<span class="side-comment-score pos" style="margin-left:4px;">{html.escape(str(sh.get("mood", "custom")).upper())} · ARP:{html.escape(str(sh.get("arp_mode", "up")).upper())}</span>'
+                        f'</div>'
+                        f'</div>'
+                        f'<p class="side-comment-text">'
+                        f'<b>CHORDS:</b> {html.escape(chords_str)}<br>'
+                        f'<b>MELODY BAR 1:</b> <code>{html.escape(mel_preview)}</code><br>'
+                        f'<b>SYNC SUBS:</b> <span style="color:var(--cyan)">{html.escape(subs_str)}</span> · <b>SWING:</b> {sh.get("swing", 0)}'
+                        f'</p>'
+                        f'</div>',
+                        unsafe_allow_html=True,
+                    )
+            st.markdown('<div class="hazard" style="height:6px; margin:10px 0;"></div>', unsafe_allow_html=True)
+            st.markdown('<div class="cap">ADD NEW SAMPLE MUSIC SHEET »</div>', unsafe_allow_html=True)
+            default_bars = json.dumps([
+                {
+                    "name": "Bbmaj9",
+                    "bass": "Bb1",
+                    "pad": ["Bb2", "D3", "F3", "A3", "C4"],
+                    "keys": ["F4", "A4", "Bb4", "C5", "D5"],
+                    "melody": ["D5", None, "C5", "A4", None, "F4", None, "G4", "A4", None, "C5", None, "D5", None, "F5", None],
+                },
+                {
+                    "name": "Gm9",
+                    "bass": "G1",
+                    "pad": ["G2", "Bb2", "D3", "F3", "A3"],
+                    "keys": ["D4", "F4", "G4", "A4", "Bb4"],
+                    "melody": ["Bb4", None, "A4", "G4", None, "D4", None, "F4", "G4", None, "A4", None, "Bb4", None, "D5", None],
+                },
+            ], indent=2)
+            with st.form("new_sheet_form", clear_on_submit=False):
+                sc1, sc2, sc3 = st.columns([1.4, 1.0, 0.8])
+                with sc1:
+                    s_title = st.text_input("SHEET TITLE", value="Midnight Neon Drift")
+                with sc2:
+                    s_artist = st.text_input("ARTIST / SOURCE", value="Custom Synth")
+                with sc3:
+                    s_mood = st.selectbox("MOOD", ["ambient", "cyber", "dreamy", "breakbeat", "lofi", "experimental"])
+                sc4, sc5, sc6, sc7 = st.columns([1, 1, 1, 1])
+                with sc4:
+                    s_bpm = st.number_input("BPM", min_value=55, max_value=170, value=94)
+                with sc5:
+                    s_meter = st.selectbox("METER", ["4/4", "3/4", "6/8", "5/4", "7/8"])
+                with sc6:
+                    s_arp = st.selectbox("ARP MODE", ["up", "down", "pingpong", "random"])
+                with sc7:
+                    s_swing = st.slider("SWING", 0.0, 0.25, 0.06, 0.01)
+                s_subs = st.text_input("SYNC SUBREDDITS (comma-separated)", value="VaporwaveAesthetics, CozyPlaces")
+                s_bars_json = st.text_area("CHORDS & MELODY BARS (JSON)", value=default_bars, height=150)
+                if st.form_submit_button("SAVE MUSIC SHEET TO LIBRARY ✦", use_container_width=True):
+                    try:
+                        parsed_bars = json.loads(s_bars_json)
+                        if not isinstance(parsed_bars, list) or not parsed_bars:
+                            raise ValueError("Bars must be a non-empty JSON list.")
+                        new_sheet = {
+                            "title": s_title.strip() or "Custom Sheet",
+                            "artist": s_artist.strip() or "Custom Synth",
+                            "mood": s_mood,
+                            "subreddits": [x.strip() for x in s_subs.split(",") if x.strip()],
+                            "bpm": int(s_bpm),
+                            "meter": s_meter,
+                            "swing": float(s_swing),
+                            "cutoff": 1150,
+                            "arp_mode": s_arp,
+                            "bars": parsed_bars,
+                            "drums": {"kicks": [0, 6, 10], "snares": [4, 12], "hats": [0, 2, 4, 6, 8, 10, 12, 14]},
+                        }
+                        saved_path = save_sheet(new_sheet)
+                        st.success(f"Saved sample music sheet: {saved_path.name}")
+                        time.sleep(0.4)
+                        st.rerun()
+                    except Exception as ex:
+                        st.error(f"Invalid sheet JSON: {ex}")
         elif view == "SETTINGS":
             S.per = st.select_slider("POSTS PER SIDE", [2, 3, 4], value=S.per)
             st.toggle("PREVIEW SVG FALLBACK ART (OFFLINE)", key="force_svg_fallback")
@@ -335,6 +833,12 @@ with c3:
             )
             if st.button("RE-SEARCH COVERS"): 
                 clear_cover_cache()
+                st.rerun()
+            if st.button("RELOAD DEFAULT SAMPLE POSTS"):
+                import copy
+                from data import SAMPLE
+                S.posts = copy.deepcopy(SAMPLE)
+                S.live = False
                 st.rerun()
         elif view == "MEM. CARD":
             if not S.saved: 

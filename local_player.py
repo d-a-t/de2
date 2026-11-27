@@ -113,6 +113,31 @@ if (!N) {
         $("note").textContent = "CANNOT LOAD FILE // IS THE LOCAL SERVER RUNNING?";
         $("note").style.color = "#ff4b4b";
     });
+
+    try {
+        const pDoc = window.parent.document;
+        pDoc.addEventListener("pointerdown", e => {
+            const t = e.target;
+            if (!t || !t.closest) return;
+            const txt = (t.innerText || t.textContent || "").trim().toUpperCase();
+            if (txt.includes("COMMENTS WINDOW") || txt.includes("SIDE COMMENTS") || txt.includes("OPEN TO SIDE")) {
+                if (!au.paused) {
+                    au.playbackRate = 0.96;
+                    setTimeout(() => { if (!au.paused) au.playbackRate = 1.0; }, 340);
+                }
+            } else if (txt.includes("▲") || txt.includes("+1") || txt.includes("UPVOTE") || txt.includes("BROADCAST")) {
+                if (!au.paused) {
+                    au.playbackRate = 1.03;
+                    setTimeout(() => { if (!au.paused) au.playbackRate = 1.0; }, 260);
+                }
+            } else if (txt.includes("▼") || txt.includes("-1") || txt.includes("DOWNVOTE")) {
+                if (!au.paused) {
+                    au.playbackRate = 0.97;
+                    setTimeout(() => { if (!au.paused) au.playbackRate = 1.0; }, 260);
+                }
+            }
+        }, { capture: true, passive: true });
+    } catch (e) {}
 }
 </script></body></html>"""
 

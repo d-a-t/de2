@@ -185,16 +185,16 @@ button:focus-visible, input:focus-visible {
 
 .layers {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 5px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
     margin-top: 5px;
 }
 .layers button {
     border: 1px solid #343d55;
     color: #b9c3d8;
     text-align: left;
-    font: 700 10px 'Space Mono', 'Courier New', monospace;
-    padding: 6px 8px;
+    font: 700 9px 'Space Mono', 'Courier New', monospace;
+    padding: 5px 6px;
     transform: none;
 }
 .layers button[aria-pressed=true] {
@@ -202,6 +202,44 @@ button:focus-visible, input:focus-visible {
     background: #00f5ff;
     color: #0b0e14;
 }
+.sheet-row {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin-top: 4px;
+}
+.sheet-select {
+    flex: 1;
+    background: #0b0e14;
+    color: #ffe600;
+    border: 1px solid #343d55;
+    padding: 4px 6px;
+    font: 700 10px 'Space Mono', monospace;
+    outline: none;
+}
+.sheet-select:focus {
+    border-color: #00f5ff;
+}
+.sheet-next {
+    border: 1px solid #00f5ff;
+    color: #00f5ff;
+    background: #0b0e14;
+    padding: 4px 8px;
+    font: 700 9px 'Space Mono', monospace;
+    transform: none;
+}
+.sheet-next:hover {
+    background: #00f5ff;
+    color: #0b0e14;
+}
+.sheet-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: #8c95ad;
+    margin-top: 4px;
+}
+.sheet-meta b { color: #00f5ff; }
 .status {
     min-height: 28px;
     margin-top: 8px;
@@ -236,13 +274,21 @@ button:focus-visible, input:focus-visible {
   </div>
   <div class="control">
     <div class="control-head"><label for="manual">BASE TEMPO</label><span><output id="manual-value">76</output> BPM</span></div>
-    <input id="manual" type="range" min="55" max="140" value="76" aria-label="Base tempo in beats per minute">
+    <input id="manual" type="range" min="55" max="165" value="76" aria-label="Base tempo in beats per minute">
   </div>
   <div class="control">
     <div class="row">
       <label class="link"><input id="scroll-link" type="checkbox" checked> LINK SCROLL TO TEMPO</label>
       <label class="link"><input id="interact-sfx" type="checkbox" checked> UI / FEED SFX</label>
     </div>
+  </div>
+  <div class="control">
+    <div class="control-head"><span class="caption">MUSIC SHEET SAMPLE</span><label class="link" style="font-size:9px"><input id="auto-sample" type="checkbox" checked> AUTO-SAMPLE</label></div>
+    <div class="sheet-row">
+      <select id="sheet-select" class="sheet-select" aria-label="Select music sheet sample"></select>
+      <button id="next-sheet" class="sheet-next" type="button">NEXT &#9656;</button>
+    </div>
+    <div class="sheet-meta"><span id="sheet-mood">MOOD: AMBIENT</span><span id="sheet-arp">ARP: <b id="arp-lbl">UP</b></span></div>
   </div>
   <div class="control">
     <div class="control-head"><span class="caption">TIME SIGNATURE</span><span id="meter-mode-lbl" style="color:#ff007f;font-size:9px">AUTO (USAGE)</span></div>
@@ -270,10 +316,11 @@ button:focus-visible, input:focus-visible {
   <div class="control">
     <div class="caption">SYNTH LAYERS</div>
     <div class="layers">
-      <button type="button" data-layer="pad" aria-pressed="true">&#10022; WARM PAD</button>
-      <button type="button" data-layer="bass" aria-pressed="true">&#9644; SUB BASS</button>
-      <button type="button" data-layer="beat" aria-pressed="true">&#9673; SOFT BEAT</button>
-      <button type="button" data-layer="keys" aria-pressed="true">&#9834; CHORD KEYS</button>
+      <button type="button" data-layer="pad" aria-pressed="true">&#10022; PAD</button>
+      <button type="button" data-layer="bass" aria-pressed="true">&#9644; BASS</button>
+      <button type="button" data-layer="beat" aria-pressed="true">&#9673; BEAT</button>
+      <button type="button" data-layer="keys" aria-pressed="true">&#9834; KEYS</button>
+      <button type="button" data-layer="melody" aria-pressed="true">&#9835; MELODY</button>
     </div>
   </div>
   <div class="buttons">
@@ -285,26 +332,58 @@ button:focus-visible, input:focus-visible {
 <script>
 (() => {
     const $ = id => document.getElementById(id);
-    const ctxState = { context: null, master: null, layers: {}, padOscs: [], running: false };
-    const layerOn = { pad: true, bass: true, beat: true, keys: true };
+    const ctxState = { context: null, master: null, layers: {}, padOscs: [], padFilter: null, padLfo: null, running: false };
+    const layerOn = { pad: true, bass: true, beat: true, keys: true, melody: true };
 
-    const PROGRESSION = [
-        { name: "Am9", pad: [110, 164.81, 246.94, 261.63], bass: 55, keys: [220, 261.63, 329.63, 392, 493.88] },
-        { name: "Fmaj9", pad: [87.31, 164.81, 220, 261.63], bass: 87.31, keys: [174.61, 220, 261.63, 329.63, 392] },
-        { name: "Dm9", pad: [146.83, 174.61, 220, 329.63], bass: 73.42, keys: [146.83, 220, 261.63, 329.63, 440] },
-        { name: "G6", pad: [98.0, 164.81, 246.94, 293.66], bass: 98.0, keys: [196.0, 246.94, 293.66, 392, 493.88] }
-    ];
+    const NOTE_OFFSETS = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+    function noteToHz(n) {
+        if (typeof n === "number") return n;
+        if (!n || typeof n !== "string") return null;
+        const m = n.trim().match(/^([A-Ga-g])([#b]?)(-?\d)$/);
+        if (!m) return 220;
+        let semi = NOTE_OFFSETS[m[1].toUpperCase()];
+        if (m[2] === "#") semi += 1;
+        if (m[2] === "b") semi -= 1;
+        const oct = parseInt(m[3], 10);
+        const midi = (oct + 1) * 12 + semi;
+        return 440 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    const RAW_SHEETS = __SHEETS_DATA__;
+    const SHEETS = RAW_SHEETS.map(s => ({
+        id: s.id || "sheet",
+        title: s.title || "Untitled",
+        artist: s.artist || "Custom",
+        mood: (s.mood || "ambient").toUpperCase(),
+        subreddits: (s.subreddits || []).map(x => x.toLowerCase()),
+        bpm: Number(s.bpm || 88),
+        meter: s.meter || "4/4",
+        swing: Number(s.swing || 0.04),
+        cutoff: Number(s.cutoff || 950),
+        arpMode: (s.arp_mode || "up").toLowerCase(),
+        drums: s.drums || { kicks: [0, 8], snares: [4, 12], hats: [0, 2, 4, 6, 8, 10, 12, 14] },
+        bars: (s.bars || []).map(b => ({
+            name: b.name || "CHORD",
+            bass: noteToHz(b.bass) || 65.41,
+            pad: (b.pad || ["A3", "C#4", "E4", "G#4"]).map(noteToHz).filter(Boolean),
+            keys: (b.keys || ["E4", "G#4", "B4", "C#5"]).map(noteToHz).filter(Boolean),
+            melody: (b.melody || []).map(n => n ? noteToHz(n) : null)
+        }))
+    }));
+
+    let activeSheetIdx = 0;
+    let PROGRESSION = SHEETS[0].bars;
 
     const METERS = {
-        "4/4": { steps: 8, kicks: [0, 4], snares: [2, 6], hats: [0, 1, 2, 3, 4, 5, 6, 7], accent: [0, 4] },
-        "3/4": { steps: 6, kicks: [0], snares: [2, 4], hats: [0, 1, 2, 3, 4, 5], accent: [0] },
-        "6/8": { steps: 6, kicks: [0], snares: [3], hats: [0, 1, 2, 3, 4, 5], accent: [0, 3] },
+        "4/4": { steps: 16, kicks: [0, 6, 10], snares: [4, 12], hats: [0, 2, 4, 6, 8, 10, 12, 14], accent: [0, 8] },
+        "3/4": { steps: 12, kicks: [0, 6], snares: [4, 8], hats: [0, 2, 4, 6, 8, 10], accent: [0, 4] },
+        "6/8": { steps: 12, kicks: [0, 6], snares: [3, 9], hats: [0, 2, 4, 6, 8, 10], accent: [0, 6] },
         "5/4": { steps: 10, kicks: [0, 6], snares: [3, 8], hats: [0, 2, 3, 5, 6, 8, 9], accent: [0, 3, 6] },
-        "7/8": { steps: 7, kicks: [0, 4], snares: [2, 5], hats: [0, 1, 2, 3, 4, 5, 6], accent: [0, 2, 4] }
+        "7/8": { steps: 14, kicks: [0, 4, 8, 11], snares: [6, 12], hats: [0, 2, 4, 6, 8, 10, 12], accent: [0, 4, 8] }
     };
 
-    let baseBpm = 76;
-    let smoothBpm = 76;
+    let baseBpm = SHEETS[0].bpm || 76;
+    let smoothBpm = baseBpm;
     let scrollVelocity = 0;
     let lastScrollAt = 0;
     let lastInputAt = 0;
@@ -313,8 +392,8 @@ button:focus-visible, input:focus-visible {
     let stepInBar = 0;
     let barCount = 0;
     let sigSetting = "AUTO";
-    let activeMeter = "4/4";
-    let pendingMeter = "4/4";
+    let activeMeter = SHEETS[0].meter || "4/4";
+    let pendingMeter = activeMeter;
     let activeView = "FEED";
     let elapsed = 0;
     let startedAt = 0;
@@ -325,6 +404,41 @@ button:focus-visible, input:focus-visible {
     let shiftsFiltered = 0;
     let interactCount = 0;
     let lastKeyAt = 0;
+
+    function populateSheetSelect() {
+        const sel = $("sheet-select");
+        if (!sel) return;
+        sel.innerHTML = "";
+        SHEETS.forEach((sh, i) => {
+            const opt = document.createElement("option");
+            opt.value = String(i);
+            opt.textContent = (i + 1) + ". " + sh.title + " (" + sh.bpm + " BPM)";
+            sel.appendChild(opt);
+        });
+        sel.value = String(activeSheetIdx);
+    }
+
+    function selectSheet(idx, reason) {
+        if (!SHEETS.length) return;
+        activeSheetIdx = ((idx % SHEETS.length) + SHEETS.length) % SHEETS.length;
+        const sh = SHEETS[activeSheetIdx];
+        PROGRESSION = sh.bars;
+        baseBpm = sh.bpm;
+        $("manual").value = Math.round(baseBpm);
+        $("manual-value").textContent = String(Math.round(baseBpm));
+        if (sigSetting === "AUTO") {
+            pendingMeter = sh.meter || "4/4";
+        }
+        if ($("sheet-select")) $("sheet-select").value = String(activeSheetIdx);
+        if ($("sheet-mood")) $("sheet-mood").textContent = "MOOD: " + sh.mood + " // " + sh.artist.toUpperCase();
+        if ($("arp-lbl")) $("arp-lbl").textContent = sh.arpMode.toUpperCase();
+        if (ctxState.padFilter && ctxState.context) {
+            ctxState.padFilter.frequency.setTargetAtTime(sh.cutoff || 950, ctxState.context.currentTime, 0.25);
+        }
+        if (reason) {
+            $("state").textContent = "SHEET: " + sh.title.toUpperCase() + " (" + reason + ")";
+        }
+    }
 
     function setLayerGain(name, value) {
         const gain = ctxState.layers[name];
@@ -351,29 +465,43 @@ button:focus-visible, input:focus-visible {
         ctxState.context = context;
         ctxState.master = master;
 
-        ["pad", "bass", "beat", "keys"].forEach(name => {
+        ["pad", "bass", "beat", "keys", "melody"].forEach(name => {
             const gain = context.createGain();
-            gain.gain.value = layerOn[name] ? 0.45 : 0;
+            gain.gain.value = layerOn[name] ? (name === "melody" ? 0.36 : 0.45) : 0;
             gain.connect(master);
             ctxState.layers[name] = gain;
         });
 
         const padFilter = context.createBiquadFilter();
         padFilter.type = "lowpass";
-        padFilter.frequency.value = 820;
+        padFilter.frequency.value = SHEETS[activeSheetIdx].cutoff || 820;
+        padFilter.Q.value = 1.6;
         padFilter.connect(ctxState.layers.pad);
+        ctxState.padFilter = padFilter;
 
-        PROGRESSION[0].pad.forEach((frequency, index) => {
+        // Subtle breathing LFO on the pad low-pass filter
+        const lfo = context.createOscillator();
+        const lfoGain = context.createGain();
+        lfo.frequency.value = 0.14;
+        lfoGain.gain.value = 180;
+        lfo.connect(lfoGain);
+        lfoGain.connect(padFilter.frequency);
+        lfo.start();
+        ctxState.padLfo = lfo;
+
+        const padNotes = PROGRESSION[0].pad;
+        for (let index = 0; index < 5; index++) {
+            const freq = padNotes[index % padNotes.length];
             const oscillator = context.createOscillator();
             const gain = context.createGain();
             oscillator.type = index % 2 ? "triangle" : "sine";
-            oscillator.frequency.value = frequency;
-            gain.gain.value = index === 0 ? 0.14 : 0.07;
+            oscillator.frequency.value = freq;
+            gain.gain.value = index === 0 ? 0.14 : 0.065;
             oscillator.connect(gain);
             gain.connect(padFilter);
             oscillator.start();
             ctxState.padOscs.push(oscillator);
-        });
+        }
     }
 
     function tone(frequency, at, duration, volume, type, destination, endFrequency) {
@@ -418,10 +546,24 @@ button:focus-visible, input:focus-visible {
         if (activeView === "CREDITS") return "4/4";
         if (activeVelocity >= threshold) return "7/8";
         if (activeVelocity >= threshold * 0.45) return "5/4";
-        return "4/4";
+        return SHEETS[activeSheetIdx].meter || "4/4";
+    }
+
+    function pickArpNote(keys, step, mode) {
+        if (!keys || !keys.length) return 440;
+        const n = keys.length;
+        if (mode === "down") return keys[(n - 1 - (step % n))];
+        if (mode === "pingpong") {
+            const cycle = Math.max(1, n * 2 - 2);
+            const p = step % cycle;
+            return keys[p < n ? p : cycle - p];
+        }
+        if (mode === "random") return keys[(step * 7 + barCount * 3) % n];
+        return keys[step % n];
     }
 
     function playStep(at) {
+        const sh = SHEETS[activeSheetIdx];
         let spec = METERS[activeMeter] || METERS["4/4"];
         if (stepInBar >= spec.steps) {
             stepInBar = 0;
@@ -431,42 +573,58 @@ button:focus-visible, input:focus-visible {
                 activeMeter = pendingMeter;
                 spec = METERS[activeMeter] || METERS["4/4"];
             }
+            // Auto-sample evolution: every 8 bars when no comments window is open, evolve to another sheet
+            if ($("auto-sample") && $("auto-sample").checked && barCount > 0 && barCount % 8 === 0 && !lastDetectedAtm && SHEETS.length > 1) {
+                selectSheet((activeSheetIdx + 1) % SHEETS.length, "AUTO-EVOLVE BAR " + barCount);
+            }
         }
         const s = stepInBar;
         const chord = PROGRESSION[barCount % PROGRESSION.length];
         const isDownbeat = s === 0;
         const isAccent = spec.accent.includes(s);
+        const drums = (sh.drums && sh.drums.kicks) ? sh.drums : spec;
 
         if (isDownbeat) {
             ctxState.padOscs.forEach((osc, i) => {
-                osc.frequency.setTargetAtTime(chord.pad[i], at, 0.14);
+                osc.frequency.setTargetAtTime(chord.pad[i % chord.pad.length], at, 0.14);
             });
             $("chord-lbl").textContent = chord.name.toUpperCase() + " // " + activeMeter;
         }
 
-        if (layerOn.bass && spec.kicks.includes(s)) {
-            const bassFreq = isDownbeat ? chord.bass : chord.bass * 1.5;
-            tone(bassFreq, at, 0.28, isDownbeat ? 0.45 : 0.30, "sine", ctxState.layers.bass);
+        if (layerOn.bass && (drums.kicks.includes(s) || (isAccent && s % 4 === 0))) {
+            const bassFreq = isDownbeat ? chord.bass : (s % 8 === 6 ? chord.bass * 2 : chord.bass * 1.5);
+            tone(bassFreq, at, 0.28, isDownbeat ? 0.44 : 0.28, "sine", ctxState.layers.bass);
         }
 
         if (layerOn.beat) {
-            if (spec.kicks.includes(s)) {
-                tone(isDownbeat ? 112 : 95, at, 0.16, isDownbeat ? 0.38 : 0.26, "sine", ctxState.layers.beat, 46);
+            if (drums.kicks.includes(s)) {
+                tone(isDownbeat ? 112 : 95, at, 0.16, isDownbeat ? 0.36 : 0.24, "sine", ctxState.layers.beat, 46);
             }
-            if (spec.snares.includes(s)) {
+            if (drums.snares.includes(s)) {
                 noise(at, 0.10, 0.08, ctxState.layers.beat, 2100);
                 tone(175, at, 0.05, 0.08, "triangle", ctxState.layers.beat, 110);
             }
-            if (spec.hats.includes(s)) {
-                noise(at, 0.03, isAccent ? 0.045 : 0.022, ctxState.layers.beat, 6500);
+            if (drums.hats.includes(s)) {
+                const vel = isAccent ? 0.042 : (s % 2 === 0 ? 0.024 : 0.014);
+                noise(at, 0.03, vel, ctxState.layers.beat, 6500);
             }
         }
 
-        if (layerOn.keys && (isDownbeat || isAccent || s === spec.steps - 1)) {
-            const note = chord.keys[(s + barCount) % chord.keys.length];
-            const dur = isDownbeat ? 0.34 : 0.20;
-            tone(note, at, dur, isDownbeat ? 0.18 : 0.12, "triangle", ctxState.layers.keys);
-            tone(note * 2, at, dur * 0.6, 0.03, "sine", ctxState.layers.keys);
+        const isWindowOpen = !!(window.parent && window.parent.document.querySelector("[data-testid='stDialog'], [role='dialog']"));
+        if (layerOn.keys && (isDownbeat || isAccent || s % 2 === 0 || isWindowOpen)) {
+            const note = pickArpNote(chord.keys, s + barCount, sh.arpMode);
+            const dur = isDownbeat ? 0.32 : 0.16;
+            tone(note, at, dur, isDownbeat ? 0.16 : 0.10, "triangle", ctxState.layers.keys);
+            if (isWindowOpen) tone(note * 2, at, dur * 0.5, 0.035, "sine", ctxState.layers.keys);
+        }
+
+        if (layerOn.melody && chord.melody && chord.melody.length) {
+            const melFreq = chord.melody[s % chord.melody.length];
+            if (melFreq) {
+                const melDur = 0.28;
+                tone(melFreq, at, melDur, 0.15, "triangle", ctxState.layers.melody);
+                tone(melFreq * 1.003, at, melDur * 0.9, 0.06, "sine", ctxState.layers.melody);
+            }
         }
 
         $("meter-lbl").textContent = activeMeter + " · " + (s + 1) + "/" + spec.steps;
@@ -503,13 +661,47 @@ button:focus-visible, input:focus-visible {
                 tone(chord.keys[0], t + 0.04, 0.30, 0.14, "triangle", out);
                 tone(chord.keys[2], t + 0.08, 0.30, 0.12, "sine", out);
                 noise(t, 0.14, 0.05, out, 2200);
+            } else if (kind === "dock") {
+                tone(chord.bass * 2, t, 0.28, 0.28, "triangle", out);
+                tone(chord.keys[1], t + 0.06, 0.26, 0.22, "sine", out);
+                tone(chord.keys[3 % chord.keys.length] * 2, t + 0.12, 0.36, 0.25, "sine", out);
+                noise(t + 0.08, 0.10, 0.035, out, 3200);
+                if (ctxState.padFilter && ctxState.context) {
+                    ctxState.padFilter.frequency.setValueAtTime(1400, t);
+                }
+            } else if (kind === "undock") {
+                tone(chord.keys[3 % chord.keys.length] * 2, t, 0.18, 0.20, "sine", out);
+                tone(chord.keys[1], t + 0.06, 0.20, 0.16, "triangle", out);
+                tone(chord.bass * 2, t + 0.12, 0.26, 0.22, "sine", out);
+                if (ctxState.padFilter && ctxState.context) {
+                    ctxState.padFilter.frequency.setValueAtTime(820, t);
+                }
+            } else if (kind === "upvote") {
+                tone(chord.keys[0] * 2, t, 0.12, 0.24, "triangle", out);
+                tone(chord.keys[2 % chord.keys.length] * 2, t + 0.04, 0.15, 0.26, "sine", out);
+                tone(chord.keys[4 % chord.keys.length] * 2, t + 0.08, 0.24, 0.28, "sine", out);
+                if (ctxState.padFilter && ctxState.context) {
+                    const cur = ctxState.padFilter.frequency.value || 900;
+                    ctxState.padFilter.frequency.setValueAtTime(Math.min(3800, cur + 600), t);
+                    ctxState.padFilter.frequency.exponentialRampToValueAtTime(cur, t + 0.7);
+                }
+            } else if (kind === "downvote") {
+                tone(chord.bass * 1.5, t, 0.20, 0.32, "sawtooth", out, chord.bass * 0.7);
+                noise(t, 0.08, 0.05, out, 850);
+            } else if (kind === "transmit") {
+                for (let k = 0; k < 4; k++) {
+                    const f = chord.keys[k % chord.keys.length] * 1.5;
+                    tone(f, t + k * 0.045, 0.16, 0.22, "triangle", out);
+                }
+                tone(chord.bass, t + 0.18, 0.25, 0.36, "sine", out, chord.bass * 0.6);
+                noise(t + 0.18, 0.12, 0.06, out, 4500);
             } else {
                 const freq = chord.keys[interactCount % chord.keys.length];
                 tone(freq, t, 0.13, 0.13, kind === "key" ? "sine" : "triangle", out);
             }
             if ($("scroll-link").checked && sensorAttached) {
-                const nudge = kind === "load" ? 320 : kind === "save" ? 210 : 120;
-                scrollVelocity = Math.min(1400, scrollVelocity * 0.7 + nudge * 0.3);
+                const nudge = kind === "transmit" ? 360 : kind === "dock" ? 280 : kind === "upvote" ? 220 : kind === "load" ? 320 : kind === "save" ? 210 : 120;
+                scrollVelocity = Math.min(1600, scrollVelocity * 0.7 + nudge * 0.3);
                 lastScrollAt = performance.now();
             }
         } catch (e) {}
@@ -643,14 +835,30 @@ button:focus-visible, input:focus-visible {
 
         if (ctxState.running && ctxState.context && ctxState.context.state === "running") {
             const horizon = ctxState.context.currentTime + 0.12;
+            const swing = SHEETS[activeSheetIdx].swing || 0;
             while (nextBeatAt < horizon) {
                 playStep(nextBeatAt);
-                nextBeatAt += 30 / smoothBpm; // eighth-note groove pulse
+                const baseStep = 15 / smoothBpm; // 16th-note groove pulse
+                const swingOffset = (stepInBar % 2 === 1 ? 1 : -1) * swing * baseStep;
+                nextBeatAt += Math.max(0.04, baseStep + swingOffset);
             }
         }
         const total = elapsed + (ctxState.running ? (Date.now() - startedAt) : 0);
         const seconds = Math.floor(total / 1000);
         $("timer").textContent = String(Math.floor(seconds / 60)).padStart(2, "0") + ":" + String(seconds % 60).padStart(2, "0");
+    }
+
+    populateSheetSelect();
+    selectSheet(0, null);
+    if ($("sheet-select")) {
+        $("sheet-select").addEventListener("change", e => {
+            selectSheet(Number(e.target.value), "MANUAL PICK");
+        });
+    }
+    if ($("next-sheet")) {
+        $("next-sheet").addEventListener("click", () => {
+            selectSheet((activeSheetIdx + 1) % SHEETS.length, "NEXT SHEET");
+        });
     }
 
     $("manual").addEventListener("input", event => { baseBpm = Number(event.target.value); });
@@ -678,7 +886,7 @@ button:focus-visible, input:focus-visible {
             const name = button.dataset.layer;
             layerOn[name] = !layerOn[name];
             button.setAttribute("aria-pressed", String(layerOn[name]));
-            setLayerGain(name, layerOn[name] ? 0.45 : 0);
+            setLayerGain(name, layerOn[name] ? (name === "melody" ? 0.36 : 0.45) : 0);
         });
     });
 
@@ -715,11 +923,92 @@ button:focus-visible, input:focus-visible {
         $("state").textContent = "SESSION ENDED // READY WHEN YOU ARE";
     });
 
+    let lastDetectedAtm = null;
+    function checkSubredditAtmosphere() {
+        try {
+            const sideEl = window.parent.document.querySelector(".side-post-header[data-subreddit]");
+            if (sideEl) {
+                const sub = (sideEl.getAttribute("data-subreddit") || "").toLowerCase();
+                if (sub && sub !== lastDetectedAtm) {
+                    lastDetectedAtm = sub;
+                    if ($("auto-sample") && $("auto-sample").checked) {
+                        const matchIdx = SHEETS.findIndex(sh => sh.subreddits.includes(sub));
+                        if (matchIdx !== -1) {
+                            selectSheet(matchIdx, "SYNC r/" + sub.toUpperCase());
+                            return;
+                        }
+                    }
+                    if (["ambientmusic", "slowliving", "slowweb", "typography", "fieldrecording", "audiophile"].includes(sub)) {
+                        baseBpm = 68;
+                        if (ctxState.padFilter && ctxState.context) {
+                            ctxState.padFilter.frequency.setTargetAtTime(520, ctxState.context.currentTime, 0.25);
+                        }
+                        $("state").textContent = "ATMOSPHERE: r/" + sub.toUpperCase() + " // AMBIENT FOCUS [68 BPM]";
+                    } else if (["jungle", "futurebeats", "chiptunes", "cyberdeck", "glitch_art"].includes(sub)) {
+                        baseBpm = 142;
+                        if (ctxState.padFilter && ctxState.context) {
+                            ctxState.padFilter.frequency.setTargetAtTime(2600, ctxState.context.currentTime, 0.25);
+                        }
+                        $("state").textContent = "ATMOSPHERE: r/" + sub.toUpperCase() + " // BREAKBEAT CYBER [142 BPM]";
+                    } else {
+                        baseBpm = 88;
+                        if (ctxState.padFilter && ctxState.context) {
+                            ctxState.padFilter.frequency.setTargetAtTime(1100, ctxState.context.currentTime, 0.25);
+                        }
+                        $("state").textContent = "ATMOSPHERE: r/" + sub.toUpperCase() + " // ANALOG SATURATION [88 BPM]";
+                    }
+                    $("manual").value = Math.round(baseBpm);
+                }
+            } else if (lastDetectedAtm) {
+                lastDetectedAtm = null;
+                const sh = SHEETS[activeSheetIdx];
+                baseBpm = sh.bpm || 96;
+                $("manual").value = Math.round(baseBpm);
+                if (ctxState.padFilter && ctxState.context) {
+                    ctxState.padFilter.frequency.setTargetAtTime(sh.cutoff || 820, ctxState.context.currentTime, 0.25);
+                }
+                $("state").textContent = "SHEET: " + sh.title.toUpperCase() + " [" + Math.round(baseBpm) + " BPM]";
+            }
+        } catch (e) {}
+    }
+
+    let sideSensorAttached = false;
+    function connectSideScrollSensor() {
+        try {
+            const side = window.parent.document.querySelector("[data-testid='stDialog'], [role='dialog'], .st-key-sidescroll");
+            if (!side) {
+                sideSensorAttached = false;
+                return;
+            }
+            if (sideSensorAttached && side.isConnected) return;
+            sideSensorAttached = true;
+            let lastSideTop = side.scrollTop;
+            
+            side.addEventListener("scroll", () => {
+                const dy = Math.abs(side.scrollTop - lastSideTop);
+                lastSideTop = side.scrollTop;
+                if (dy > 0) {
+                    recordPace(dy * 1.5);
+                    if (ctxState.context && ctxState.padFilter) {
+                        const maxScroll = Math.max(1, side.scrollHeight - side.clientHeight);
+                        const frac = Math.min(1, side.scrollTop / maxScroll);
+                        const sweep = 550 + frac * 2200;
+                        ctxState.padFilter.frequency.setTargetAtTime(sweep, ctxState.context.currentTime, 0.08);
+                    }
+                }
+            }, { passive: true });
+            
+            side.addEventListener("wheel", e => recordPace(e.deltaY * 1.5), { passive: true });
+        } catch (e) {}
+    }
+
     setInterval(() => {
         if (!connectFeedSensor() && !sensorAttached) {
             $("sensor").textContent = activeView + " VIEW // SELECT* & MANUAL TUNER ACTIVE";
         }
-    }, 500);
+        connectSideScrollSensor();
+        checkSubredditAtmosphere();
+    }, 450);
     setInterval(refreshControls, 25);
 
     try {
@@ -740,7 +1029,7 @@ button:focus-visible, input:focus-visible {
                 return;
             }
 
-            if (!target.closest(".st-key-feedscroll, .st-key-stage")) return;
+            if (!target.closest(".st-key-feedscroll, .st-key-sidescroll, .st-key-stage, [data-testid='stDialog'], [role='dialog']")) return;
 
             const btn = target.closest("button");
             if (btn) {
@@ -751,9 +1040,23 @@ button:focus-visible, input:focus-visible {
                     playTunedInteraction("unsave", "REMOVED FROM MEM.");
                 } else if (txt.includes("LOAD NEXT SIDE")) {
                     playTunedInteraction("load", "LOAD NEXT SIDE");
+                } else if (txt.includes("COMMENTS WINDOW") || txt.includes("SIDE COMMENTS") || txt.includes("OPEN TO SIDE")) {
+                    playTunedInteraction("dock", "OPEN COMMENTS WINDOW");
+                } else if (txt.includes("CLOSE DOCK") || txt.includes("CLOSE")) {
+                    playTunedInteraction("undock", "CLOSE WINDOW");
+                } else if (txt.includes("▲") || txt.includes("+1") || txt.includes("UPVOTE")) {
+                    playTunedInteraction("upvote", "COMMENT ▲ UPVOTE (+1)");
+                } else if (txt.includes("▼") || txt.includes("-1") || txt.includes("DOWNVOTE")) {
+                    playTunedInteraction("downvote", "COMMENT ▼ DOWNVOTE (-1)");
+                } else if (txt.includes("BROADCAST") || txt.includes("TRANSMIT")) {
+                    playTunedInteraction("transmit", "SIGNAL BROADCAST");
                 } else {
                     playTunedInteraction("btn", txt.slice(0, 16) || "BUTTON PRESS");
                 }
+                return;
+            }
+            if (target.closest(".side-comment-card, .comment-card")) {
+                playTunedInteraction("select", "COMMENT FREQUENCY TOUCH");
                 return;
             }
             if (target.closest(".card")) {
@@ -788,5 +1091,9 @@ button:focus-visible, input:focus-visible {
 """
 
 
-def sonic_deck_html():
-    return SONIC_DECK_HTML
+def sonic_deck_html(sheets=None):
+    import json
+    from sheets import load_sheets
+    data = sheets if sheets is not None else load_sheets()
+    payload = json.dumps(data).replace("</", "<\\/")
+    return SONIC_DECK_HTML.replace("__SHEETS_DATA__", payload)

@@ -1,0 +1,47 @@
+{
+  "id": "cassette_flutter",
+  "title": "Cassette Flutter",
+  "artist": "Magnetic Tape Lab",
+  "mood": "lofi",
+  "subreddits": ["cassetteculture", "lofihiphop", "vintageaudio", "minidisc", "analog"],
+  "bpm": 82,
+  "meter": "4/4",
+  "swing": 0.16,
+  "cutoff": 920,
+  "arp_mode": "random",
+  "bars": [
+    {
+      "name": "Dmaj7",
+      "bass": "D2",
+      "pad": ["D3", "F#3", "A3", "C#4", "E4"],
+      "keys": ["A3", "C#4", "E4", "F#4", "A4"],
+      "melody": ["F#4", null, "A4", "C#5", null, "E5", null, "C#5", "A4", null, "F#4", null, "E4", null, null, null]
+    },
+    {
+      "name": "B7#9",
+      "bass": "B1",
+      "pad": ["B2", "D#3", "A3", "D4", "F#4"],
+      "keys": ["F#3", "A3", "D4", "D#4", "F#4"],
+      "melody": ["D5", null, "B4", "A4", null, "F#4", null, "D#4", "F#4", null, "A4", null, "B4", null, null, null]
+    },
+    {
+      "name": "Em9",
+      "bass": "E2",
+      "pad": ["E3", "G3", "B3", "D4", "F#4"],
+      "keys": ["B3", "D4", "F#4", "G4", "B4"],
+      "melody": ["G5", null, "F#5", "D5", null, "B4", null, "G4", "A4", null, "B4", null, "D5", null, null, null]
+    },
+    {
+      "name": "A13",
+      "bass": "A1",
+      "pad": ["A2", "C#3", "G3", "B3", "F#4"],
+      "keys": ["E4", "G4", "B4", "C#5", "F#5"],
+      "melody": ["F#5", null, "E5", "C#5", null, "B4", null, "A4", "G4", null, "E4", null, "C#5", null, null, null]
+    }
+  ],
+  "drums": {
+    "kicks": [0, 7, 10],
+    "snares": [4, 12],
+    "hats": [0, 2, 4, 6, 8, 10, 12, 14]
+  }
+}
